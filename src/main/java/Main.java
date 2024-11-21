@@ -20,7 +20,8 @@ public class Main {
     private static Router configureRouter()
     {
         Router router = new Router();
-        router.addService("/user", new UserController());
+        router.addService("/sessions", new UserController());
+        router.addService("/users", new UserController());
 
         return router;
     }

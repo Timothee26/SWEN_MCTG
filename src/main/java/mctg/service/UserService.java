@@ -20,10 +20,21 @@ public class UserService extends AbstractService{
     }
 
     public Response loginUser(Request request) {
-        User user = userRepository.findByUsername();
+        String body = request.getBody();
+        if (body == null || body.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
+        }
+
+        User user;
+        try{
+            user = new ObjectMapper().readValue(request.getBody(), User.class);
+        }catch (JsonProcessingException e) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Invalid JSON format.\" }");
+        }
+        Collection<User> weatherCollection = userRepository.findAllUser(user.getUsername());
         String json = null;
         try {
-            json = this.getObjectMapper().writeValueAsString(user);
+            json = this.getObjectMapper().writeValueAsString(weatherCollection);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

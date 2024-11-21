@@ -4,7 +4,6 @@ import mctg.persistence.DataAccessException;
 import mctg.persistence.UnitOfWork;
 import mctg.model.User;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,8 +43,33 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Collection<User> findAllUser() {
-        return List.of();
+    public Collection<User> findAllUser(String username) {
+        try (PreparedStatement preparedStatement =
+                     this.unitOfWork.prepareStatement("""
+                    select * from userdb.user
+                    where username = ?
+                """))
+        {
+            preparedStatement.setString(1, username);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Collection<User> userRows = new ArrayList<>();
+            while(resultSet.next())
+            {
+                User user = new User(
+                        resultSet.getString(1),
+                        resultSet.getString(2));
+                userRows.add(user);
+            }
+            if(!userRows.isEmpty()){
+                return userRows;
+            }
+            else{
+              return null;
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Select nicht erfolgreich", e);
+        }
     }
 
     @Override
@@ -56,7 +80,7 @@ public class UserRepositoryImpl implements UserRepository {
             stmt.setString(2, user.getPassword());
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
-                System.out.println("Weather data inserted successfully. 2");
+                System.out.println("Register data inserted successfully. 2");
             } else {
                 System.out.println("No rows inserted.");
             }
