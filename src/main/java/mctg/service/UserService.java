@@ -31,13 +31,13 @@ public class UserService extends AbstractService{
         }catch (JsonProcessingException e) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Invalid JSON format.\" }");
         }
-        Collection<User> weatherCollection = userRepository.findAllUser(user.getUsername());
+        userRepository.login(user);
         String json = null;
-        try {
-            json = this.getObjectMapper().writeValueAsString(weatherCollection);
+        /*try {
+            json = this.getObjectMapper().writeValueAsString(userCollection);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
-        }
+        }*/
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
 

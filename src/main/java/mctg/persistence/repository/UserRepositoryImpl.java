@@ -74,20 +74,49 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void registerUpload(User user) {
-        String sql = "INSERT INTO userdb.user (username, password) VALUES (?, ?)";
-        try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getPassword());
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                System.out.println("Register data inserted successfully. 2");
-            } else {
-                System.out.println("No rows inserted.");
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException("Could not insert into database", e);
+        Collection<User> isRegistered = findAllUser(user.getUsername());
+        if (isRegistered != null) {
+            throw new DataAccessException("User " + user.getUsername() + " already exists");
         }
-        unitOfWork.commitTransaction();
+        else{
+            String sql = "INSERT INTO userdb.user (username, password) VALUES (?, ?)";
+            try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+                stmt.setString(1, user.getUsername());
+                stmt.setString(2, user.getPassword());
+                int rowsInserted = stmt.executeUpdate();
+                if (rowsInserted > 0) {
+                    System.out.println("Register data inserted successfully.");
+                } else {
+                    System.out.println("No rows inserted.");
+                }
+            } catch (SQLException e) {
+                throw new DataAccessException("Could not insert into database", e);
+            }
+            unitOfWork.commitTransaction();
+        }
+    }
+
+    public void login(User user) {
+        Collection<User> isRegistered = findAllUser(user.getUsername());
+        if(isRegistered!=null){
+            String sql = "INSERT INTO userdb.login (username, token) VALUES (?, ?)";
+            try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+                stmt.setString(1, user.getUsername());
+                stmt.setString(2, user.getToken());
+                int rowsInserted = stmt.executeUpdate();
+                if (rowsInserted > 0) {
+                    System.out.println("token inserted successfully.");
+                } else {
+                    System.out.println("No rows inserted.");
+                }
+            } catch (SQLException e) {
+                throw new DataAccessException("Could not insert into database", e);
+            }
+            unitOfWork.commitTransaction();
+        }
+        else{
+            throw new DataAccessException("User " + user.getUsername() + " does not exist");
+        }
     }
 }
     //public void
