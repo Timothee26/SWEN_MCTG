@@ -1,16 +1,53 @@
-Implement database:
+In the first step the docker has to be installed. then the docker-compose.yml file can be created with following information:
 
-user: userdb
-password: userdb
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        volumes:
+          - ./data:/var/lib/postgresql/data
+        environment:
+          - POSTGRES_PASSWORD=userdb
+          - POSTGRES_USER=userdb
 
-CREATE SCHEMA userdb AUTHORIZATION userdb;
 
-CREATE TABLE userdb."user" (
-	username varchar NOT NULL,
-	"password" varchar NOT NULL
-);
+To deploy docker container, execute the following command in your terminal:
 
-CREATE TABLE userdb.login (
-	username varchar NULL,
-	"token" varchar NULL
-);
+    docker compose up -d
+
+Then, execute the following SQL scripts (schema should already exist and if there are problems with the user, add all permissions):
+
+    CREATE SCHEMA IF NOT EXISTS userdb AUTHORIZATION userdb;
+
+    CREATE TABLE userdb.user (
+        Username varchar(200)  NULL,
+        Password varchar(200)  NULL
+    );
+
+    CREATE TABLE userdb.login (
+        Username varchar(200) NULL,
+        token varchar(200) NULL
+    );
+
+After having done this step, the webserver can be started. For that, the Main.java (path: src/main/java/Main.java) can be started by pressing the "play"-button.
+
+To test the functionalities you can use "Bruno" or "Postman" or any other API testing software of your choice.
+Create a new collection with the different methods that are implemented.
+
+1.  Method: POST
+    URL: http://localhost:10001/users
+    format: JSON
+    request-body:
+    {
+      "Username": "<username>",
+      "Password": "<password>"
+    }
+
+2.  Method: POST
+    URL: http://localhost:10001/sessions
+    format: JSON
+    request-body:
+        {
+          "Username": "<username>"
+        }

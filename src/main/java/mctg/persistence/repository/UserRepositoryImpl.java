@@ -29,7 +29,7 @@ public class UserRepositoryImpl implements UserRepository {
         try (PreparedStatement preparedStatement =
                 this.unitOfWork.prepareStatement("""
                     select * from userdb.user
-                    where username = ?
+                    where Username = ?
                 """))
         {
             preparedStatement.setString(1, username);
@@ -58,7 +58,7 @@ public class UserRepositoryImpl implements UserRepository {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
                     select * from userdb.user
-                    where username = ?
+                    where Username = ?
                 """))
         {
             preparedStatement.setString(1, username);
@@ -94,7 +94,7 @@ public class UserRepositoryImpl implements UserRepository {
             throw new DataAccessException("User " + user.getUsername() + " already exists");
         }
         else{
-            String sql = "INSERT INTO userdb.user (username, password) VALUES (?, ?)";
+            String sql = "INSERT INTO userdb.user (Username, Password) VALUES (?, ?)";
             try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
                 stmt.setString(1, user.getUsername());
                 stmt.setString(2, user.getPassword());
@@ -119,7 +119,7 @@ public class UserRepositoryImpl implements UserRepository {
     public void login(User user) {
         Collection<User> isRegistered = findAllUser(user.getUsername());
         if(isRegistered!=null){
-            String sql = "INSERT INTO userdb.login (username, token) VALUES (?, ?)";
+            String sql = "INSERT INTO userdb.login (Username, token) VALUES (?, ?)";
             try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
                 stmt.setString(1, user.getUsername());
                 stmt.setString(2, user.getToken());
