@@ -1,0 +1,16 @@
+Implement database:
+
+user: userdb
+password: userdb
+
+CREATE SCHEMA userdb AUTHORIZATION userdb;
+
+CREATE TABLE userdb."user" (
+	username varchar NOT NULL,
+	"password" varchar NOT NULL
+);
+
+CREATE TABLE userdb.login (
+	username varchar NULL,
+	"token" varchar NULL
+);
