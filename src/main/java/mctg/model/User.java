@@ -6,10 +6,9 @@ import java.security.SecureRandom;
 public class User {
     @JsonAlias({"Username"})
     private String username;
-    @JsonAlias({"password"})
+    @JsonAlias({"Password"})
     private String password;
 
-    public User(){};
     public User(String username, String password) {
         this.username = username;
         this.password = password;
