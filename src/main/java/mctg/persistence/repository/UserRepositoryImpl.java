@@ -46,8 +46,6 @@ public class UserRepositoryImpl implements UserRepository {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
     }
-
-
     /**
      * searching for every user in the table and returning all information
      * @param username
