@@ -9,6 +9,7 @@ public class User {
     @JsonAlias({"Password"})
     private String password;
 
+    //needed for curlskript
     public User() {}
 
     public User(String username, String password) {
