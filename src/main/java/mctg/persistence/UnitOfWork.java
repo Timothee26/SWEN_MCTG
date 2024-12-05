@@ -19,6 +19,10 @@ public class UnitOfWork implements AutoCloseable{
         return connection;
     }
 
+    /**
+     * the transaction (insert into database) is commited
+     * if an error occurs error is thrown with a message
+     */
     public void commitTransaction()
     {
         if (this.connection != null) {
@@ -41,6 +45,10 @@ public class UnitOfWork implements AutoCloseable{
         }
     }
 
+    /**
+     * the connection to the server is closed and set to null
+     * with error handling if error occurs
+     */
     public void finishWork()
     {
         if (this.connection != null) {
@@ -53,6 +61,11 @@ public class UnitOfWork implements AutoCloseable{
         }
     }
 
+    /**
+     * connection to database is tested and the statement to for the database is prepared with the SQL statement
+     * @param sql
+     * @return
+     */
     public PreparedStatement prepareStatement(String sql)
     {
         if (this.connection != null) {

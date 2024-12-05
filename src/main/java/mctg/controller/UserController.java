@@ -14,6 +14,11 @@ public class UserController implements RestController {
         this.userService = new UserService();
     }
 
+    /**
+     * checks the method and pathname and returns the corresponding function
+     * @param request
+     * @return
+     */
     @Override
     public Response handleRequest(Request request) {
         if (request.getMethod() == Method.POST && request.getPathname().equals("/sessions")) {

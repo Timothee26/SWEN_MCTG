@@ -19,6 +19,12 @@ public class UserRepositoryImpl implements UserRepository {
         this.unitOfWork = unitOfWork;
     }
 
+
+    /**
+     * searching for user in table and receive all information to the user as return
+     * @param username
+     * @return
+     */
     @Override
     public User findByUsername(String username) {
         try (PreparedStatement preparedStatement =
@@ -42,6 +48,11 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
+    /**
+     * searching for every user in the table and returning all information
+     * @param username
+     * @return
+     */
     @Override
     public Collection<User> findAllUser(String username) {
         try (PreparedStatement preparedStatement =
@@ -72,6 +83,10 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
+    /**
+     * create a new user and insert the username and the password in the table
+     * @param user
+     */
     @Override
     public void registerUpload(User user) {
         Collection<User> isRegistered = findAllUser(user.getUsername());

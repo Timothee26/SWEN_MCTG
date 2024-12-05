@@ -19,6 +19,11 @@ public class UserService extends AbstractService{
         userRepository = new UserRepositoryImpl(new UnitOfWork());
     }
 
+
+    /**
+     * receices body from the request and checks the format and body of the request
+     * if everything is correct the login function is called
+     */
     public Response loginUser(Request request) {
         String body = request.getBody();
         if (body == null || body.isEmpty()) {
@@ -41,6 +46,11 @@ public class UserService extends AbstractService{
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
 
+
+    /**
+     * receices body from the request and checks the format and body of the request
+     * if everything is correct the registerUser function is called
+     */
     public Response registerUser(Request request) {
         String body = request.getBody();
         if (body == null || body.isEmpty()) {
@@ -49,7 +59,7 @@ public class UserService extends AbstractService{
 
         User user;
         try{
-            user = new ObjectMapper().readValue(request.getBody(), User.class);
+            user = this.getObjectMapper().readValue(request.getBody(), User.class);
         }catch (JsonProcessingException e) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Invalid JSON format.\" }");
         }
