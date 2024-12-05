@@ -5,7 +5,7 @@ import mctg.model.User;
 import java.util.Collection;
 
 /**
- * created functions needed to handle database
+ * created functions neaded to handle database
  */
 public interface UserRepository {
     User findByUsername(String username);

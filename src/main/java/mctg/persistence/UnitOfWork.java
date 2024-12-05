@@ -15,9 +15,11 @@ public class UnitOfWork implements AutoCloseable{
             throw new DataAccessException("Autocommit nicht deaktivierbar", e);
         }
     }
+
     public Connection getConnection() {
         return connection;
     }
+
 
     /**
      * the transaction (insert into database) is commited

@@ -12,13 +12,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Collection;
+
+
 public class UserService extends AbstractService{
     private UserRepository userRepository;
 
     public UserService() {
         userRepository = new UserRepositoryImpl(new UnitOfWork());
     }
-
 
     /**
      * receices body from the request and checks the format and body of the request
@@ -38,14 +39,8 @@ public class UserService extends AbstractService{
         }
         userRepository.login(user);
         String json = null;
-        /*try {
-            json = this.getObjectMapper().writeValueAsString(userCollection);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }*/
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
-
 
     /**
      * receices body from the request and checks the format and body of the request
