@@ -92,10 +92,11 @@ public class UserRepositoryImpl implements UserRepository {
             throw new DataAccessException("User " + user.getUsername() + " already exists");
         }
         else{
-            String sql = "INSERT INTO userdb.user (Username, Password) VALUES (?, ?)";
+            String sql = "INSERT INTO userdb.user (Username, Password, Coins) VALUES (?, ?, ?)";
             try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
                 stmt.setString(1, user.getUsername());
                 stmt.setString(2, user.getPassword());
+                stmt.setInt(3, 20);
                 int rowsInserted = stmt.executeUpdate();
                 if (rowsInserted > 0) {
                     System.out.println("Register data inserted successfully.");

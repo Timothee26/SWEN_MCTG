@@ -10,7 +10,6 @@ import mctg.persistence.repository.PackageRepository;
 import mctg.persistence.repository.PackageRepositoryImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import mctg.persistence.repository.UserRepositoryImpl;
 
 import java.util.ArrayList;
 import java.util.List;

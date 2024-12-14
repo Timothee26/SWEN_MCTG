@@ -4,6 +4,7 @@ import httpserver.server.Server;
 import httpserver.utils.Router;
 import mctg.controller.PackageController;
 import mctg.controller.EchoController;
+import mctg.controller.TransactionsPackagesController;
 import mctg.controller.UserController;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ public class Main {
         router.addService("/sessions", new UserController());
         router.addService("/users", new UserController());
         router.addService("/package", new PackageController());
+        router.addService("/transactionspackages", new TransactionsPackagesController());
 
         return router;
     }
