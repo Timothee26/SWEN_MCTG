@@ -2,6 +2,7 @@
 
 import httpserver.server.Server;
 import httpserver.utils.Router;
+import mctg.controller.PackageController;
 import mctg.controller.EchoController;
 import mctg.controller.UserController;
 
@@ -22,6 +23,7 @@ public class Main {
         Router router = new Router();
         router.addService("/sessions", new UserController());
         router.addService("/users", new UserController());
+        router.addService("/package", new PackageController());
 
         return router;
     }

@@ -1,5 +1,7 @@
 package httpserver.server;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import httpserver.http.Method;
 
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ public class Request {
     private String params;
     private HeaderMap headerMap =  new HeaderMap();
     private String body;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public String getServiceRoute(){
         if (this.pathParts == null ||
@@ -100,5 +103,14 @@ public class Request {
 
     public void setPathParts(List<String> pathParts) {
         this.pathParts = pathParts;
+    }
+
+    public <T> List<T> getBodyAsList(Class <T> clazz) {
+        try {
+            return objectMapper.readValue(body, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 }
