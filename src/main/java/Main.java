@@ -2,10 +2,7 @@
 
 import httpserver.server.Server;
 import httpserver.utils.Router;
-import mctg.controller.PackageController;
-import mctg.controller.EchoController;
-import mctg.controller.TransactionsPackagesController;
-import mctg.controller.UserController;
+import mctg.controller.*;
 
 import java.io.IOException;
 
@@ -26,6 +23,7 @@ public class Main {
         router.addService("/users", new UserController());
         router.addService("/package", new PackageController());
         router.addService("/transactionspackages", new TransactionsPackagesController());
+        router.addService("/cards", new CardsController());
 
         return router;
     }

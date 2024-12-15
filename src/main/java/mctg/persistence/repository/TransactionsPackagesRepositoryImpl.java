@@ -21,18 +21,21 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
         this.unitOfWork = unitOfWork;
     }
 
-    public int getPid() {
-        String sql = "SELECT max(pid) AS max_pid FROM userdb.package WHERE bought = zero";
+    public List<Integer> getPid() {
+        String sql = "SELECT pid FROM userdb.package WHERE bought = ?";
+        List<Integer> pids = new ArrayList<>();
         try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {
+            stmt.setString(1, "zero");
             ResultSet resultSet = stmt.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt("max_pid");
-            } else {
-                return 0;
+            while (resultSet.next()) {
+                int pid = resultSet.getInt("pid");
+                pids.add(pid);
+                System.out.println("Found pid: " + pid);
             }
         } catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
+        return pids;
     }
 
     public int findCoins(String username) {
@@ -42,25 +45,27 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
             stmt.setString(1, username);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
-                return resultSet.getInt("coins"); // Erfolgreiche Abfrage
+                System.out.println("findcoins" +resultSet.getInt("coins"));
+                return resultSet.getInt("coins");
             } else {
-                return 0; // Benutzer nicht gefunden, daher keine Coins
+                return 0;
             }
         } catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
     }
     public void updateCoins(String username) {
-        String sql = "UPDATE userdb.coins set coins = ? where Username = ?";
+        String sql = "UPDATE userdb.user set coins = ? where Username = ?";
 
         try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql))
         {
             stmt.setInt(1, findCoins(username)-5);
+            stmt.setString(2, username);
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
-                System.out.println("Row inserted successfully.");
+                System.out.println("Row updated successfully.");
             } else {
-                System.out.println("No rows inserted.");
+                System.out.println("No rows updated.");
             }
 
         } catch (SQLException e) {
@@ -70,21 +75,34 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
     }
 
     public void buyPackage(String username){
-        System.out.println(username);
+        System.out.println("buyPackage" +username);
         int coins = findCoins(username);
-        int pid = getPid();
+        System.out.println("buyPackage" +coins);
+        List<Integer> pids = getPid();
+        if (pids.isEmpty()) {
+            System.out.println("No packages available to buy.");
+            return;
+        }
         if (coins >= 5){
             Random rand = new Random();
-            int n = rand.nextInt(pid-1);
+            int n = rand.nextInt(pids.size());
+            int selectedPid = pids.get(n);
+            System.out.println("buyPackage random" + selectedPid);
             String sql = "UPDATE userdb.package set bought=? where pid=?";
             try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
                 stmt.setString(1, username);
-                stmt.setInt(2, n+1);
+                stmt.setInt(2, selectedPid);
+                int rowsInserted = stmt.executeUpdate();
+                if (rowsInserted > 0) {
+                    System.out.println("Row updated successfully.");
+                } else {
+                    System.out.println("No rows updated.");
+                }
             }catch (SQLException e){
                 throw new DataAccessException("Could not insert into database",e);
             }
-            updateCoins(username);
             unitOfWork.commitTransaction();
+            updateCoins(username);
         }
 
     }
