@@ -17,6 +17,9 @@ public class DeckController implements RestController {
         if (request.getMethod() == Method.PUT && request.getPathname().equals("/deck")) {
             return this.deckService.createDeck(request);
         }
+        if (request.getMethod() == Method.GET && request.getPathname().equals("/deck")) {
+            return this.deckService.getDeck(request);
+        }
         return new Response(
                 HttpStatus.BAD_REQUEST,
                 ContentType.JSON,

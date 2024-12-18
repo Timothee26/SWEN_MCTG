@@ -33,4 +33,27 @@ public class DeckService extends AbstractService {
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
 
+    public Response getDeck(Request request) {
+        String body = request.getBody();
+        String header = request.getHeaderMap().getHeader("Authorization");
+        System.out.println(header);
+        if (body == null || body.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
+        }
+        User user;
+        try{
+            user = new ObjectMapper().readValue(request.getBody(), User.class);
+        }catch (JsonProcessingException e) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Invalid JSON format.\" }");
+        }
+
+        List<String> deckCollection = deckRepository.getDeck(user.getUsername());
+        String json = null;
+        try {
+            json = this.getObjectMapper().writeValueAsString(deckCollection);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return new Response(HttpStatus.OK, ContentType.JSON, json);
+    }
 }
