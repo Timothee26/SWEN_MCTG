@@ -74,14 +74,40 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
         unitOfWork.commitTransaction();
     }
 
-    public void buyPackage(String username){
+    public String getUsername(String token){
+        System.out.println("token :" + token);
+        System.out.println("in der abfrage");
+        String sql = "SELECT * from userdb.login";
+        try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                System.out.println("in der while");
+                User user = new User(
+                        resultSet.getString(1),
+                        resultSet.getString(2)
+                );
+                System.out.println("user.token:" + user.getToken());
+                if(user.getPassword().contains(token)){
+                    System.out.println("user gefunden");
+                    return user.getUsername();
+                }
+            }
+        }catch (SQLException e) {
+            throw new DataAccessException("Select nicht erfolgreich", e);
+        }
+
+        return null;
+    }
+
+    public List<String> buyPackage(String token){
+        String username = getUsername(token);
         System.out.println("buyPackage" +username);
         int coins = findCoins(username);
         System.out.println("buyPackage" +coins);
         List<Integer> pids = getPid();
         if (pids.isEmpty()) {
             System.out.println("No packages available to buy.");
-            return;
+            return null;
         }
         if (coins >= 5){
             Random rand = new Random();
@@ -104,7 +130,7 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
             unitOfWork.commitTransaction();
             updateCoins(username);
         }
-
+        return null;
     }
 
 

@@ -3,6 +3,6 @@ package mctg.persistence.repository;
 import java.util.List;
 
 public interface DeckRepository {
-    public void createDeck(List<String> cardIds);
-    public List<String> getDeck(String username);
+    public List<String> createDeck(List<String> cardIds,String token);
+    public List<String> getDeck(String token);
 }

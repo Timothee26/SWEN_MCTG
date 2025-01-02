@@ -22,32 +22,33 @@ public class DeckService extends AbstractService {
     public DeckService() {deckRepository = new DeckRepositoryImpl(new UnitOfWork());}
 
     public Response createDeck(Request request) {
+        String header = request.getHeaderMap().getHeader("Authorization");
+
+        if (header == null || header.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
+        }
+
         String body = request.getBody();
 
         if (body == null || body.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"smth went wrong\"}");
         }
         List<String> cardIds = request.getBodyAsList(String.class);
-        deckRepository.createDeck(cardIds);
+        List<String> deckRepositoryCollection = deckRepository.createDeck(cardIds, header);
         String json = null;
+        try {
+            json = this.getObjectMapper().writeValueAsString(deckRepositoryCollection);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
 
     public Response getDeck(Request request) {
-        String body = request.getBody();
         String header = request.getHeaderMap().getHeader("Authorization");
         System.out.println(header);
-        if (body == null || body.isEmpty()) {
-            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
-        }
-        User user;
-        try{
-            user = new ObjectMapper().readValue(request.getBody(), User.class);
-        }catch (JsonProcessingException e) {
-            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Invalid JSON format.\" }");
-        }
 
-        List<String> deckCollection = deckRepository.getDeck(user.getUsername());
+        List<String> deckCollection = deckRepository.getDeck(header);
         String json = null;
         try {
             json = this.getObjectMapper().writeValueAsString(deckCollection);

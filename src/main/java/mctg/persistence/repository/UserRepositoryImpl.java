@@ -39,7 +39,7 @@ public class UserRepositoryImpl implements UserRepository {
             {
                 user = new User(
                         resultSet.getString(1),
-                        resultSet.getString(1));
+                        resultSet.getString(    1));
             }
             return user;
         } catch (SQLException e) {
@@ -121,7 +121,7 @@ public class UserRepositoryImpl implements UserRepository {
             String sql = "INSERT INTO userdb.login (Username, token) VALUES (?, ?)";
             try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
                 stmt.setString(1, user.getUsername());
-                stmt.setString(2, user.getToken());
+                stmt.setString(2, user.createToken());
                 int rowsInserted = stmt.executeUpdate();
                 if (rowsInserted > 0) {
                     System.out.println("token inserted successfully.");

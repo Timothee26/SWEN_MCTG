@@ -1,5 +1,7 @@
 package mctg.persistence.repository;
 
+import java.util.List;
+
 public interface TransactionsPackagesRepository {
-    void buyPackage(String username);
+    public List<String> buyPackage(String token);
 }

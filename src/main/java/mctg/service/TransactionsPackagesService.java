@@ -11,32 +11,26 @@ import mctg.persistence.UnitOfWork;
 import mctg.persistence.repository.TransactionsPackagesRepository;
 import mctg.persistence.repository.TransactionsPackagesRepositoryImpl;
 
-
+import java.util.List;
 public class TransactionsPackagesService extends AbstractService{
    private TransactionsPackagesRepository transactionsPackagesRepository;
 
    public TransactionsPackagesService(){transactionsPackagesRepository = new TransactionsPackagesRepositoryImpl(new UnitOfWork());}
 
     public Response buyPackage(Request request) {
-       String body = request.getBody();
+        String header = request.getHeaderMap().getHeader("Authorization");
 
-        /*if (body == null || body.isEmpty()) {
-            transactionsPackagesRepository.buyPackage(body);
-        }else{
-            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"smth went wrong\"}");
-        }*/
-
-        if (body == null || body.isEmpty()) {
+        if (header == null || header.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
-        User user;
-        try{
-            user = new ObjectMapper().readValue(request.getBody(), User.class);
-        }catch (JsonProcessingException e) {
-            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Invalid JSON format.\" }");
-        }
-        transactionsPackagesRepository.buyPackage(user.getUsername());
+
+        List<String> transactionsPackageCollection = transactionsPackagesRepository.buyPackage(header);
         String json = null;
+        try {
+            json = this.getObjectMapper().writeValueAsString(transactionsPackageCollection);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
 }

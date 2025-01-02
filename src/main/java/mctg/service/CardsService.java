@@ -22,19 +22,13 @@ public class CardsService extends AbstractService {
     public CardsService() {cardsRepository = new CardsRepositoryImpl(new UnitOfWork());}
 
     public Response showCards(Request request) {
-        String body = request.getBody();
+        String header = request.getHeaderMap().getHeader("Authorization");
 
-        if (body == null || body.isEmpty()) {
+        if (header == null || header.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
-        User user;
-        try{
-            user = new ObjectMapper().readValue(request.getBody(), User.class);
-        }catch (JsonProcessingException e) {
-            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Invalid JSON format.\" }");
-        }
 
-        List<String> cardCollection = cardsRepository.showCards(user.getUsername());
+        List<String> cardCollection = cardsRepository.showCards(header);
         String json = null;
         try {
             json = this.getObjectMapper().writeValueAsString(cardCollection);

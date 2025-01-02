@@ -1,6 +1,7 @@
 package mctg.persistence.repository;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import mctg.model.User;
 import mctg.persistence.DataAccessException;
 import mctg.persistence.UnitOfWork;
 import mctg.model.Card;
@@ -22,7 +23,33 @@ public class CardsRepositoryImpl implements CardsRepository {
         this.unitOfWork = unitOfWork;
     }
 
-    public List<String> showCards(String username){
+    public String getUsername(String token){
+        System.out.println("token :" + token);
+        System.out.println("in der abfrage");
+        String sql = "SELECT * from userdb.login";
+        try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                System.out.println("in der while");
+                User user = new User(
+                        resultSet.getString(1),
+                        resultSet.getString(2)
+                );
+                System.out.println("user.token:" + user.getToken());
+                if(user.getPassword().contains(token)){
+                    System.out.println("user gefunden");
+                    return user.getUsername();
+                }
+            }
+        }catch (SQLException e) {
+            throw new DataAccessException("Select nicht erfolgreich", e);
+        }
+
+        return null;
+    }
+
+    public List<String> showCards(String token){
+        String username = getUsername(token);
         String sql = "SELECT Id, Name, Damage FROM userdb.package WHERE bought = ?";
         List<String> cards = new ArrayList<>();
 
