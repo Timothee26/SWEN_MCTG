@@ -24,6 +24,12 @@ public class DeckService extends AbstractService {
     public Response createDeck(Request request) {
         String header = request.getHeaderMap().getHeader("Authorization");
 
+        String parts[] = header.split(" ");
+        if (parts.length >1) {
+            header = parts[1];
+        }else{
+            header = parts[0];
+        }
         if (header == null || header.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
@@ -46,6 +52,12 @@ public class DeckService extends AbstractService {
 
     public Response getDeck(Request request) {
         String header = request.getHeaderMap().getHeader("Authorization");
+        String parts[] = header.split(" ");
+        if (parts.length >1) {
+            header = parts[1];
+        }else{
+            header = parts[0];
+        }
         System.out.println(header);
 
         List<String> deckCollection = deckRepository.getDeck(header);
