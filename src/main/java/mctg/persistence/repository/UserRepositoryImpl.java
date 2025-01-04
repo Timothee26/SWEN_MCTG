@@ -107,6 +107,21 @@ public class UserRepositoryImpl implements UserRepository {
                 throw new DataAccessException("Could not insert into database", e);
             }
             unitOfWork.commitTransaction();
+
+            sql = "INSERT INTO userdb.users (Name) VALUES (?)";
+            try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+                stmt.setString(1, user.getUsername());
+                int rowsInserted = stmt.executeUpdate();
+                if (rowsInserted > 0) {
+                    System.out.println("token inserted successfully.");
+                } else {
+                    System.out.println("No rows inserted.");
+                }
+            } catch (SQLException e) {
+                throw new DataAccessException("Could not insert into database", e);
+            }
+            unitOfWork.commitTransaction();
+
         }
     }
 
@@ -132,10 +147,61 @@ public class UserRepositoryImpl implements UserRepository {
                 throw new DataAccessException("Could not insert into database", e);
             }
             unitOfWork.commitTransaction();
+
         }
         else{
             throw new DataAccessException("User " + user.getUsername() + " does not exist");
         }
+    }
+
+    public String getUsername(String token){
+        System.out.println("token :" + token);
+        System.out.println("in der abfrage");
+        String sql = "SELECT * from userdb.login";
+        try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                System.out.println("in der while");
+                User user = new User(
+                        resultSet.getString(1),
+                        resultSet.getString(2)
+                );
+                System.out.println("user.token:" + user.getToken());
+                if(user.getPassword().contains(token)){
+                    System.out.println("user gefunden");
+                    return user.getUsername();
+                }
+            }
+        }catch (SQLException e) {
+            throw new DataAccessException("Select nicht erfolgreich", e);
+        }
+
+        return null;
+    }
+
+    public List<String> getData(String token, String username) {
+        if (!username.equals(getUsername(token))) {
+            return null;
+        }
+        String sql = "SELECT * from userdb.users where Name = ?";
+        List<String> userDetails = new ArrayList<>();
+
+        try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            ResultSet resultSet = stmt.executeQuery();
+
+            if (resultSet.next()) {
+                userDetails.add("Name: " + resultSet.getString("Name"));
+                userDetails.add("Bio: " + resultSet.getString("Bio"));
+                userDetails.add("Image: " + resultSet.getString("Image"));
+            } else {
+                throw new DataAccessException("User not found in the database.");
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Select nicht erfolgreich", e);
+        }
+        return userDetails;
     }
 }
     //public void

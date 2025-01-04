@@ -27,6 +27,11 @@ public class UserController implements RestController {
         else if (request.getMethod() == Method.POST && request.getPathname().equals("/users")) {
             return this.userService.registerUser(request);
         }
+        else if (request.getMethod() == Method.GET && request.getPathname().contains("/users/")) {
+            String name[] = request.getPathname().split("/");
+            String username = name[name.length - 1];
+            return this.userService.editUser(request,username);
+        }
         return new Response(
                 HttpStatus.BAD_REQUEST,
                 ContentType.JSON,
