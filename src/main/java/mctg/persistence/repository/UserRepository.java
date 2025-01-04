@@ -14,4 +14,5 @@ public interface UserRepository {
     void login(User user);
     void registerUpload(User user);
     List<String> getData(String token, String username);
+    List<String> editData(String token, String data, String username);
 }

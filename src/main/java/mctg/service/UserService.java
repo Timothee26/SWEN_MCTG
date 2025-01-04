@@ -69,7 +69,7 @@ public class UserService extends AbstractService{
         return new Response(HttpStatus.CREATED, ContentType.JSON, "{ \"message\": \"registration data added successfully.\" }");
     }
 
-    public Response editUser(Request request, String username) {
+    public Response getUser(Request request, String username) {
         String header = request.getHeaderMap().getHeader("Authorization");
         String parts[] = header.split(" ");
         if (parts.length >1) {
@@ -81,6 +81,33 @@ public class UserService extends AbstractService{
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
         List<String> userController = userRepository.getData(header, username);
+        String json = null;
+        try {
+            json = this.getObjectMapper().writeValueAsString(userController);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return new Response(HttpStatus.OK, ContentType.JSON, json);
+    }
+
+    public Response editUser(Request request, String username) {
+        String header = request.getHeaderMap().getHeader("Authorization");
+        String parts[] = header.split(" ");
+
+        String body = request.getBody();
+        if (body == null || body.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
+        }
+
+        if (parts.length >1) {
+            header = parts[1];
+        }else{
+            header = parts[0];
+        }
+        if (header == null || header.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
+        }
+        List<String> userController = userRepository.editData(header, body, username);
         String json = null;
         try {
             json = this.getObjectMapper().writeValueAsString(userController);
