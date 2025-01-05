@@ -37,13 +37,20 @@ public class PackageRepositoryImpl implements PackageRepository {
     public void createPackage(List<Card> cards){
         int pid = getPid()+1;
         for(Card card : cards){
-            String sql = "INSERT INTO userdb.package (id, name, damage, pid, bought) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO userdb.package (id, name, damage, pid, bought, type) VALUES (?, ?, ?, ?, ?, ?)";
             try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
                 stmt.setString(1, card.getId());
                 stmt.setString(2, card.getName());
                 stmt.setInt(3, card.getDamage());
                 stmt.setInt(4,pid);
                 stmt.setString(5,"zero");
+                if(card.getName().contains("Water"))
+                    stmt.setString(6,"Water");
+                else if(card.getName().contains("Fire") || card.getName().equals("Dragon"))
+                    stmt.setString(6,"Fire");
+                else
+                    stmt.setString(6,"Normal");
+
                 int rowsInserted = stmt.executeUpdate();
 
                 if (rowsInserted > 0) {

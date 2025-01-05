@@ -50,7 +50,7 @@ public class CardsRepositoryImpl implements CardsRepository {
 
     public List<String> showCards(String token){
         String username = getUsername(token);
-        String sql = "SELECT Id, Name, Damage FROM userdb.package WHERE bought = ?";
+        String sql = "SELECT Id, Name, Damage, Type FROM userdb.package WHERE bought = ?";
         List<String> cards = new ArrayList<>();
 
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
@@ -62,6 +62,7 @@ public class CardsRepositoryImpl implements CardsRepository {
                 card.put("Id", resultSet.getString("Id"));
                 card.put("Name", resultSet.getString("Name"));
                 card.put("Damage", resultSet.getString("Damage"));
+                card.put("ElementType", resultSet.getString("Type"));
 
                 cards.add(card.toString());
                 System.out.println("Found card: " + card);

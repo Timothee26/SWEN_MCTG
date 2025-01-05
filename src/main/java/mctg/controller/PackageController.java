@@ -17,7 +17,7 @@ public class PackageController implements RestController {
 
     @Override
     public Response handleRequest(Request request) {
-        if (request.getMethod() == Method.POST && request.getPathname().equals("/package")) {
+        if (request.getMethod() == Method.POST && request.getPathname().equals("/packages")) {
             return this.packageService.createPackage(request);
         }
         return new Response(

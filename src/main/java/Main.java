@@ -21,7 +21,7 @@ public class Main {
         Router router = new Router();
         router.addService("/sessions", new UserController());
         router.addService("/users", new UserController());
-        router.addService("/package", new PackageController());
+        router.addService("/packages", new PackageController());
         router.addService("/transactionspackages", new TransactionsPackagesController());
         router.addService("/cards", new CardsController());
         router.addService("/deck", new DeckController());

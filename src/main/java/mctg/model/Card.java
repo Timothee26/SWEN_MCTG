@@ -11,8 +11,8 @@ public class Card {
     private int damage;
     @JsonAlias({"Bought"})
     private String bought;
-    /*@JsonAlias({"ElementType"})
-    private String elementType;*/
+    @JsonAlias({"ElementType"})
+    private String elementType;
 
     public Card(){}
     public Card(String Id, String Name, int Damage, String Bought/*, String type*/) {
@@ -20,7 +20,7 @@ public class Card {
         this.name = Name;
         this.damage = Damage;
         this.bought = Bought;
-        //this.elementType = elementType;
+        this.elementType = elementType;
     }
 
     public String getId() {return id;}
@@ -31,7 +31,7 @@ public class Card {
 
     public String getBought() {return bought;}
 
-    //public String getElementType() {return elementType;}
+    public String getElementType() {return elementType;}
 
     public void setId(String id) {
         this.id = id;
@@ -49,7 +49,8 @@ public class Card {
         this.bought = bought;
     }
 
-    /*public void setElementType(String elementType) {
+    public void setElementType(String elementType) {
         this.elementType = elementType;
-    }*/
+    }
+
 }

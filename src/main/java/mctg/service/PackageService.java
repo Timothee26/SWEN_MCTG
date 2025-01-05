@@ -28,6 +28,11 @@ public class PackageService extends AbstractService{
         List<Card> cards = request.getBodyAsList(Card.class);
         packageRepository.createPackage(cards);
         String json = null;
+        try {
+            json = this.getObjectMapper().writeValueAsString(packageRepository);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
 }
