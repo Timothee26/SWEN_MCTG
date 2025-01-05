@@ -5,6 +5,7 @@ import httpserver.http.HttpStatus;
 import httpserver.server.Request;
 import httpserver.server.Response;
 import mctg.model.User;
+import mctg.model.UserData;
 import mctg.persistence.UnitOfWork;
 import mctg.persistence.repository.UserRepository;
 import mctg.persistence.repository.UserRepositoryImpl;
@@ -99,6 +100,13 @@ public class UserService extends AbstractService{
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
 
+        UserData userData;
+        try{
+            userData = this.getObjectMapper().readValue(request.getBody(), UserData.class);
+        }catch (JsonProcessingException e) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Invalid JSON format.\" }");
+        }
+
         if (parts.length >1) {
             header = parts[1];
         }else{
@@ -107,7 +115,7 @@ public class UserService extends AbstractService{
         if (header == null || header.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
-        List<String> userController = userRepository.editData(header, body, username);
+        List<String> userController = userRepository.editData(header, userData, username);
         String json = null;
         try {
             json = this.getObjectMapper().writeValueAsString(userController);

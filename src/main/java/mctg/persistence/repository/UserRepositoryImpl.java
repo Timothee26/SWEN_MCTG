@@ -1,5 +1,6 @@
 package mctg.persistence.repository;
 
+import mctg.model.UserData;
 import mctg.persistence.DataAccessException;
 import mctg.persistence.UnitOfWork;
 import mctg.model.User;
@@ -204,7 +205,8 @@ public class UserRepositoryImpl implements UserRepository {
         return userDetails;
     }
 
-    public List<String> getData(String token, String data, String username) {
+    @Override
+    public List<String> editData(String token, UserData data, String username) {
         if (!username.equals(getUsername(token))) {
             return null;
         }
@@ -212,9 +214,24 @@ public class UserRepositoryImpl implements UserRepository {
 
         String sql = "Update userdb.users set Name = ?, Bio = ?, Image = ? where Name = ?";
         try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {
-            stmt.setString(1, data.);
+            stmt.setString(1, data.getName());
+            stmt.setString(2, data.getBio());
+            stmt.setString(3, data.getImage());
+            stmt.setString(4, username);
+            int rowsInserted = stmt.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("Row updated successfully.");
+            } else {
+                System.out.println("No rows updated.");
+            }
+        }catch (SQLException e) {
+            throw new DataAccessException("Select nicht erfolgreich", e);
         }
+        unitOfWork.commitTransaction();
+        return null;
     }
 }
+
+
     //public void
 

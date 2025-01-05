@@ -1,6 +1,7 @@
 package mctg.persistence.repository;
 
 import mctg.model.User;
+import mctg.model.UserData;
 
 import java.util.Collection;
 import java.util.List;
@@ -14,5 +15,5 @@ public interface UserRepository {
     void login(User user);
     void registerUpload(User user);
     List<String> getData(String token, String username);
-    List<String> editData(String token, String data, String username);
+    List<String> editData(String token, UserData data, String username);
 }
