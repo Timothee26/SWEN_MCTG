@@ -18,6 +18,7 @@ import java.security.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 
 public class BattlesService extends AbstractService{
     private BattlesRepository battlesRepository;
@@ -28,11 +29,32 @@ public class BattlesService extends AbstractService{
         deckRepository = new DeckRepositoryImpl(new UnitOfWork());
     }
 
+    int randomCard(int size){
+        Random random = new Random();
+        return random.nextInt(size);
+    }
+
     public void battles(List<String> tokens){
         List<Card> Player1 = new ArrayList<>();
         List<Card> Player2 = new ArrayList<>();
         Player1 = deckRepository.getDeck(tokens.get(0));
         Player2 = deckRepository.getDeck(tokens.get(1));
+
+        while(!Player1.isEmpty() && !Player2.isEmpty()){
+            Card card1 = Player1.get(randomCard(Player1.size()));
+            Card card2 = Player2.get(randomCard(Player2.size()));
+            if(card1.getDamage() > card2.getDamage()){
+                Player1.add(card2);
+                Player2.remove(card2);
+            }else if (card1.getDamage() < card2.getDamage()){
+                Player2.add(card1);
+                Player1.remove(card1);
+            }
+        }
+        if(Player1.isEmpty()){
+            System.out.println(Pl);
+        }
+
 
 
     }
@@ -53,7 +75,6 @@ public class BattlesService extends AbstractService{
         for (String token : tokens) {
             System.out.println(token);
         }
-
 
         if (header == null || header.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
