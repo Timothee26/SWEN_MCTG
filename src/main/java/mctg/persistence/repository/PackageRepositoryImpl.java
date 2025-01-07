@@ -41,7 +41,7 @@ public class PackageRepositoryImpl implements PackageRepository {
             try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
                 stmt.setString(1, card.getId());
                 stmt.setString(2, card.getName());
-                stmt.setInt(3, card.getDamage());
+                stmt.setFloat(3, card.getDamage());
                 stmt.setInt(4,pid);
                 stmt.setString(5,"zero");
                 if(card.getName().contains("Water"))

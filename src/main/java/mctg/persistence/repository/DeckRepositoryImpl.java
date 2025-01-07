@@ -41,7 +41,7 @@ public class DeckRepositoryImpl implements DeckRepository {
         return cards;
     }
 
-    public boolean userDeckExists(List<String> card){
+    public boolean userDeckExists(List<Card> card){
        if(card.isEmpty()){
            return false;
        }
@@ -71,7 +71,7 @@ public class DeckRepositoryImpl implements DeckRepository {
                 try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {
                     stmt.setString(1, card.getId());
                     stmt.setString(2, card.getName());
-                    stmt.setInt(3, card.getDamage());
+                    stmt.setFloat(3, card.getDamage());
                     stmt.setString(4, card.getBought());
                     stmt.setString(5,card.getElementType());
                     int rowsInserted = stmt.executeUpdate();
@@ -114,23 +114,24 @@ public class DeckRepositoryImpl implements DeckRepository {
         return null;
     }
 
-    public List<String> getDeck(String token){
+    public List<Card> getDeck(String token){
         String username = getUsername(token);
         String sql = "SELECT Id, Name, Damage, Type from userdb.deck where Bought = ?";
-        List<String> cards = new ArrayList<>();
+        List<Card> cards = new ArrayList<>();
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
             stmt.setString(1, username);
             ResultSet resultSet = stmt.executeQuery();
             int i = 1;
             while (resultSet.next()) {
-                JSONObject card = new JSONObject();
-                card.put("Id", resultSet.getString("Id"));
-                card.put("Name", resultSet.getString("Name"));
-                card.put("Damage", resultSet.getString("Damage"));
-                card.put("Type", resultSet.getString("Type"));
+                //JSONObject card = new JSONObject();
+                Card card = new Card();
+                card.setId(resultSet.getString("Id"));
+                card.setName(resultSet.getString("Name"));
+                card.setDamage(resultSet.getFloat("Damage"));
+                card.setElementType(resultSet.getString("Type"));
 
-                cards.add(card.toString());
-                System.out.println("card "+ i +": "+ card);
+                cards.add(card);
+                System.out.println("card "+ i +": "+ card.getName());
                 i++;
             }
         }catch (SQLException e) {

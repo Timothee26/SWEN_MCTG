@@ -8,14 +8,14 @@ public class Card {
     @JsonAlias({"Name"})
     private String name;
     @JsonAlias({"Damage"})
-    private int damage;
+    private float damage;
     @JsonAlias({"Bought"})
     private String bought;
     @JsonAlias({"ElementType"})
     private String elementType;
 
     public Card(){}
-    public Card(String Id, String Name, int Damage, String Bought/*, String type*/) {
+    public Card(String Id, String Name, float Damage, String Bought/*, String type*/) {
         this.id = Id;
         this.name = Name;
         this.damage = Damage;
@@ -27,7 +27,7 @@ public class Card {
 
     public String getName() {return name;}
 
-    public int getDamage() {return damage;}
+    public float getDamage() {return damage;}
 
     public String getBought() {return bought;}
 
@@ -41,7 +41,7 @@ public class Card {
         this.name = name;
     }
 
-    public void setDamage(int damage) {
+    public void setDamage(float damage) {
         this.damage = damage;
     }
 

@@ -29,13 +29,12 @@ public class BattlesService extends AbstractService{
     }
 
     public void battles(List<String> tokens){
-        List<String> Player1 = new ArrayList<>();
-        List<String> Player2 = new ArrayList<>();
+        List<Card> Player1 = new ArrayList<>();
+        List<Card> Player2 = new ArrayList<>();
         Player1 = deckRepository.getDeck(tokens.get(0));
         Player2 = deckRepository.getDeck(tokens.get(1));
 
-        System.out.println(Player1);
-        System.out.println(Player2);
+
     }
 
 

@@ -60,7 +60,7 @@ public class DeckService extends AbstractService {
         }
         System.out.println(header);
 
-        List<String> deckCollection = deckRepository.getDeck(header);
+        List<Card> deckCollection = deckRepository.getDeck(header);
         String json = null;
         try {
             json = this.getObjectMapper().writeValueAsString(deckCollection);
