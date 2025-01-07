@@ -123,7 +123,6 @@ public class DeckRepositoryImpl implements DeckRepository {
             ResultSet resultSet = stmt.executeQuery();
             int i = 1;
             while (resultSet.next()) {
-                //JSONObject card = new JSONObject();
                 Card card = new Card();
                 card.setId(resultSet.getString("Id"));
                 card.setName(resultSet.getString("Name"));

@@ -34,25 +34,44 @@ public class BattlesService extends AbstractService{
         return random.nextInt(size);
     }
 
+    float checkTypeAndEffectiveness(Card card1, Card card2){
+        if(card1.getName().contains("Spell")){
+            if(card1.getElementType() == "Water" && card2.getElementType() == "Fire"){
+                float damage = card1.getDamage()*2;
+                return damage;
+            }
+        }
+    }
+
     public void battles(List<String> tokens){
         List<Card> Player1 = new ArrayList<>();
         List<Card> Player2 = new ArrayList<>();
         Player1 = deckRepository.getDeck(tokens.get(0));
         Player2 = deckRepository.getDeck(tokens.get(1));
+        int round = 0;
 
-        while(!Player1.isEmpty() && !Player2.isEmpty()){
+        while(!Player1.isEmpty() && !Player2.isEmpty() && round < 100){
+            round++;
             Card card1 = Player1.get(randomCard(Player1.size()));
             Card card2 = Player2.get(randomCard(Player2.size()));
             if(card1.getDamage() > card2.getDamage()){
+                System.out.println("Player1 won with: "+card1.getName()+"("+card1.getDamage()+")"+" won against "+card2.getName()+"("+card2.getDamage()+")");
                 Player1.add(card2);
                 Player2.remove(card2);
             }else if (card1.getDamage() < card2.getDamage()){
+                System.out.println("Player2 won with: "+card2.getName()+"("+card2.getDamage()+")"+" won against "+card1.getName()+"("+card1.getDamage()+")");
                 Player2.add(card1);
                 Player1.remove(card1);
             }
         }
         if(Player1.isEmpty()){
-            System.out.println(Pl);
+            System.out.println("Player 2 won");
+        }else if (Player2.isEmpty()){
+            System.out.println("Player 1 won");
+        }else{
+            System.out.println("over 100 rounds");
+            System.out.println("Player1 has "+ Player1.size()+" cards left");
+            System.out.println("Player2 has "+ Player2.size()+" cards left");
         }
 
 
