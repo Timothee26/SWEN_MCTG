@@ -31,7 +31,7 @@ public class DeckRepositoryImpl implements DeckRepository {
                     deckCard.setName(resultSet.getString("Name"));
                     deckCard.setDamage(resultSet.getInt("Damage"));
                     deckCard.setBought(resultSet.getString("Bought"));
-                    deckCard.setBought(resultSet.getString("Type"));
+                    deckCard.setElementType(resultSet.getString("Type"));
                     cards.add(deckCard);
                 }
             }catch (SQLException e) {
