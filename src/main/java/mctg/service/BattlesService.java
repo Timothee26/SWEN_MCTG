@@ -36,7 +36,6 @@ public class BattlesService extends AbstractService{
 
     float checkTypeAndEffectiveness(Card card1, Card card2){
         if(card1.getName().contains("Spell")){
-            System.out.println("0");
             if(card1.getElementType().equals("Water") && card2.getElementType().equals("Fire")){
                 return card1.getDamage()*2;
             }else if(card1.getElementType().equals("Fire") && card2.getElementType().equals("Normal")){
@@ -49,9 +48,26 @@ public class BattlesService extends AbstractService{
                 return card1.getDamage() /2;
             } else if(card1.getElementType().equals("Water") && card2.getElementType().equals("Normal")) {
                 return card1.getDamage() /2;
+            }else if(card1.getName().contains("Knight") && card2.getName().equals("WaterSpell")) {
+                return 0;
             }
         }
         return card1.getDamage();
+    }
+
+    boolean checkSpecialties(Card card1, Card card2){
+        if(card1.getName().contains("Goblin") && card2.getName().contains("Dragon")){
+            return true;
+        }else if (card1.getName().contains("Wizzard") && card2.getName().contains("Ork")){
+            return true;
+        }else if (card1.getName().contains("Dragon") && card2.getName().contains("Dragon")){
+            return true;
+        }else if (card1.getName().contains("Kraken") && card2.getName().contains("Spell")){
+            return true;
+        } else if (card1.getName().contains("FireElve") && card2.getName().contains("Dragon")){
+            return true;
+        }
+        return false;
     }
 
     public void battles(List<String> tokens){
@@ -65,6 +81,12 @@ public class BattlesService extends AbstractService{
             round++;
             Card card1 = Player1.get(randomCard(Player1.size()));
             Card card2 = Player2.get(randomCard(Player2.size()));
+
+            if(checkSpecialties(card1,card2) || checkSpecialties(card2,card1)){
+                continue;
+            }
+
+
             float card1Damage = checkTypeAndEffectiveness(card1, card2);
             float card2Damage = checkTypeAndEffectiveness(card2, card1);
             if(card1Damage > card2Damage){
