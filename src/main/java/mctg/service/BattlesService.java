@@ -70,6 +70,15 @@ public class BattlesService extends AbstractService{
         return false;
     }
 
+    boolean luck(Card card){
+        Random random = new Random();
+        int n = random.nextInt(100);
+        if (n == 13){
+            return true;
+        }
+        return false;
+    }
+
     public void battles(List<String> tokens){
         List<Card> Player1 = new ArrayList<>();
         List<Card> Player2 = new ArrayList<>();
@@ -82,10 +91,22 @@ public class BattlesService extends AbstractService{
             Card card1 = Player1.get(randomCard(Player1.size()));
             Card card2 = Player2.get(randomCard(Player2.size()));
 
+            if(luck(card1) && luck(card2)){
+                System.out.println("beide Player hatten Glück, die Runde wird übersprungen");
+                continue;
+            } else if (luck(card1)){
+                System.out.println(card1.getBought()+" hatte Glück und bekommt die Karte von "+ card2.getBought());
+                Player1.add(card2);
+                Player2.remove(card2);
+            }else if (luck(card2)) {
+                System.out.println(card2.getBought()+" hatte Glück und bekommt die Karte von "+ card1.getBought());
+                Player2.add(card1);
+                Player1.remove(card1);
+            }
+
             if(checkSpecialties(card1,card2) || checkSpecialties(card2,card1)){
                 continue;
             }
-
 
             float card1Damage = checkTypeAndEffectiveness(card1, card2);
             float card2Damage = checkTypeAndEffectiveness(card2, card1);
@@ -99,6 +120,7 @@ public class BattlesService extends AbstractService{
                 Player1.remove(card1);
             }
         }
+
         if(Player1.isEmpty()){
             System.out.println("Player 2 won");
         }else if (Player2.isEmpty()){
@@ -108,11 +130,7 @@ public class BattlesService extends AbstractService{
             System.out.println("Player1 has "+ Player1.size()+" cards left");
             System.out.println("Player2 has "+ Player2.size()+" cards left");
         }
-
-
-
     }
-
 
     public List<String> tokens = new ArrayList<>();
     public Response getTokens(Request request) {
