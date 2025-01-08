@@ -116,7 +116,7 @@ public class DeckRepositoryImpl implements DeckRepository {
 
     public List<Card> getDeck(String token){
         String username = getUsername(token);
-        String sql = "SELECT Id, Name, Damage, Type from userdb.deck where Bought = ?";
+        String sql = "SELECT Id, Name, Damage, Type, Bought from userdb.deck where Bought = ?";
         List<Card> cards = new ArrayList<>();
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
             stmt.setString(1, username);
@@ -128,6 +128,7 @@ public class DeckRepositoryImpl implements DeckRepository {
                 card.setName(resultSet.getString("Name"));
                 card.setDamage(resultSet.getFloat("Damage"));
                 card.setElementType(resultSet.getString("Type"));
+                card.setBought(resultSet.getString("Bought"));
 
                 cards.add(card);
                 System.out.println("card "+ i +": "+ card.getName());

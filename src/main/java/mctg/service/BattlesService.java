@@ -70,7 +70,7 @@ public class BattlesService extends AbstractService{
         return false;
     }
 
-    boolean luck(Card card){
+    boolean luck(){
         Random random = new Random();
         int n = random.nextInt(100);
         if (n == 13){
@@ -86,20 +86,21 @@ public class BattlesService extends AbstractService{
         Player2 = deckRepository.getDeck(tokens.get(1));
         int round = 0;
 
-        while(!Player1.isEmpty() && !Player2.isEmpty() && round < 100){
+        while(!Player1.isEmpty() && !Player2.isEmpty()/* && round < 100*/){
             round++;
             Card card1 = Player1.get(randomCard(Player1.size()));
             Card card2 = Player2.get(randomCard(Player2.size()));
-
-            if(luck(card1) && luck(card2)){
+            boolean Player1Luck = luck();
+            boolean Player2Luck = luck();
+            if(Player1Luck && Player2Luck){
                 System.out.println("beide Player hatten Glück, die Runde wird übersprungen");
                 continue;
-            } else if (luck(card1)){
-                System.out.println(card1.getBought()+" hatte Glück und bekommt die Karte von "+ card2.getBought());
+            } else if (Player1Luck){
+                System.out.println(card1.getBought()+" hatte Glück und bekommt die Karte "+card2.getName()+ " von " + card2.getBought());
                 Player1.add(card2);
                 Player2.remove(card2);
-            }else if (luck(card2)) {
-                System.out.println(card2.getBought()+" hatte Glück und bekommt die Karte von "+ card1.getBought());
+            }else if (Player2Luck) {
+                System.out.println(card2.getBought()+" hatte Glück und bekommt die Karte"+card1.getName()+ " von " + card1.getBought());
                 Player2.add(card1);
                 Player1.remove(card1);
             }
