@@ -36,11 +36,22 @@ public class BattlesService extends AbstractService{
 
     float checkTypeAndEffectiveness(Card card1, Card card2){
         if(card1.getName().contains("Spell")){
-            if(card1.getElementType() == "Water" && card2.getElementType() == "Fire"){
-                float damage = card1.getDamage()*2;
-                return damage;
+            System.out.println("0");
+            if(card1.getElementType().equals("Water") && card2.getElementType().equals("Fire")){
+                return card1.getDamage()*2;
+            }else if(card1.getElementType().equals("Fire") && card2.getElementType().equals("Normal")){
+                return card1.getDamage()*2;
+            }else if(card1.getElementType().equals("Normal") && card2.getElementType().equals("Water")) {
+                return card1.getDamage() * 2;
+            }else if(card1.getElementType().equals("Fire") && card2.getElementType().equals("Water")) {
+                return card1.getDamage() /2;
+            }else if(card1.getElementType().equals("Normal") && card2.getElementType().equals("Fire")) {
+                return card1.getDamage() /2;
+            } else if(card1.getElementType().equals("Water") && card2.getElementType().equals("Normal")) {
+                return card1.getDamage() /2;
             }
         }
+        return card1.getDamage();
     }
 
     public void battles(List<String> tokens){
@@ -54,12 +65,14 @@ public class BattlesService extends AbstractService{
             round++;
             Card card1 = Player1.get(randomCard(Player1.size()));
             Card card2 = Player2.get(randomCard(Player2.size()));
-            if(card1.getDamage() > card2.getDamage()){
-                System.out.println("Player1 won with: "+card1.getName()+"("+card1.getDamage()+")"+" won against "+card2.getName()+"("+card2.getDamage()+")");
+            float card1Damage = checkTypeAndEffectiveness(card1, card2);
+            float card2Damage = checkTypeAndEffectiveness(card2, card1);
+            if(card1Damage > card2Damage){
+                System.out.println("Player1 won with: "+card1.getName()+"("+card1Damage+")"+" won against "+card2.getName()+"("+card2Damage+")");
                 Player1.add(card2);
                 Player2.remove(card2);
-            }else if (card1.getDamage() < card2.getDamage()){
-                System.out.println("Player2 won with: "+card2.getName()+"("+card2.getDamage()+")"+" won against "+card1.getName()+"("+card1.getDamage()+")");
+            }else if (card1Damage < card2Damage){
+                System.out.println("Player2 won with: "+card2.getName()+"("+card2Damage+")"+" won against "+card1.getName()+"("+card1Damage+")");
                 Player2.add(card1);
                 Player1.remove(card1);
             }
@@ -101,6 +114,7 @@ public class BattlesService extends AbstractService{
         String json = null;
         if(tokens.size() == 2){
             battles(tokens);
+            tokens.clear();
         }
 
         /*try {
