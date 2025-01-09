@@ -22,10 +22,10 @@ public class Main {
         router.addService("/sessions", new UserController());
         router.addService("/users", new UserController());
         router.addService("/packages", new PackageController());
-        router.addService("/transactionspackages", new TransactionsPackagesController());
+        router.addService("/transactions", new TransactionsPackagesController());
         router.addService("/cards", new CardsController());
         router.addService("/deck", new DeckController());
-        router.addService("/users/timothee", new UserController());
+        router.addService("/users/", new UserController());
         router.addService("/battles", new BattlesController());
 
         return router;

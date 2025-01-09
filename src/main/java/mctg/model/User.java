@@ -27,10 +27,12 @@ public class User {
     }
 
     public String createToken() {
-        SecureRandom random = new SecureRandom();
+        /*SecureRandom random = new SecureRandom();
         byte bytes[] = new byte[20];
         random.nextBytes(bytes);
         String token = bytes.toString();
+        return token;*/
+        String token = username+"-mtcgToken";
         return token;
     }
     public void setPassword(String password) {this.password = password;}

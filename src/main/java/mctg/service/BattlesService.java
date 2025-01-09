@@ -90,6 +90,8 @@ public class BattlesService extends AbstractService{
             round++;
             Card card1 = Player1.get(randomCard(Player1.size()));
             Card card2 = Player2.get(randomCard(Player2.size()));
+
+
             boolean Player1Luck = luck();
             boolean Player2Luck = luck();
             if(Player1Luck && Player2Luck){

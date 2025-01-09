@@ -35,11 +35,15 @@ public class UserService extends AbstractService{
 
         User user;
         try{
-            user = new ObjectMapper().readValue(request.getBody(), User.class);
+            user = this.getObjectMapper().readValue(request.getBody(), User.class);
         }catch (JsonProcessingException e) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Invalid JSON format.\" }");
         }
-        userRepository.login(user);
+        try {
+            userRepository.login(user);
+        } catch (Exception e) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Failed to insert registration data.\" }");
+        }
         String json = null;
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
@@ -64,7 +68,7 @@ public class UserService extends AbstractService{
         try {
             userRepository.registerUpload(user);
         } catch (Exception e) {
-            return new Response(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "{ \"error\": \"Failed to insert registration data.\" }");
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Failed to insert registration data.\" }");
         }
 
         return new Response(HttpStatus.CREATED, ContentType.JSON, "{ \"message\": \"registration data added successfully.\" }");

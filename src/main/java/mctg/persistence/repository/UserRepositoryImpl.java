@@ -22,27 +22,35 @@ public class UserRepositoryImpl implements UserRepository {
 
     /**
      * searching for user in table and receive all information to the user as return
+     *
      * @param username
      * @return
      */
     @Override
-    public User findByUsername(String username) {
+    public Collection<User> findInLogin(String username) {
         try (PreparedStatement preparedStatement =
-                this.unitOfWork.prepareStatement("""
-                    select * from userdb.user
+                     this.unitOfWork.prepareStatement("""
+                    select * from userdb.login
                     where Username = ?
                 """))
         {
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
-            User user = null;
+            Collection<User> userRows = new ArrayList<>();
             while(resultSet.next())
             {
-                user = new User(
+                User user = new User(
                         resultSet.getString(1),
-                        resultSet.getString(    1));
+                        resultSet.getString(2));
+                userRows.add(user);
             }
-            return user;
+            if(!userRows.isEmpty()){
+                return userRows;
+            }
+            else{
+                return null;
+            }
+
         } catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
@@ -90,9 +98,11 @@ public class UserRepositoryImpl implements UserRepository {
     public void registerUpload(User user) {
         Collection<User> isRegistered = findAllUser(user.getUsername());
         if (isRegistered != null) {
+            System.out.println("ist schon vorhanden");
             throw new DataAccessException("User " + user.getUsername() + " already exists");
         }
         else{
+            System.out.println("ist noch nicht vorhanden");
             String sql = "INSERT INTO userdb.user (Username, Password, Coins) VALUES (?, ?, ?)";
             try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
                 stmt.setString(1, user.getUsername());
@@ -132,8 +142,9 @@ public class UserRepositoryImpl implements UserRepository {
      * @param user
      */
     public void login(User user) {
-        Collection<User> isRegistered = findAllUser(user.getUsername());
-        if(isRegistered!=null){
+        System.out.println("login wird irgendwo aufgerufen");
+        Collection<User> isRegistered = findInLogin(user.getUsername());
+        if(isRegistered == null){
             String sql = "INSERT INTO userdb.login (Username, token) VALUES (?, ?)";
             try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
                 stmt.setString(1, user.getUsername());
@@ -151,7 +162,8 @@ public class UserRepositoryImpl implements UserRepository {
 
         }
         else{
-            throw new DataAccessException("User " + user.getUsername() + " does not exist");
+            System.out.println("ist schon vorhanden");
+            throw new DataAccessException("User " + user.getUsername() + " already exists");
         }
     }
 

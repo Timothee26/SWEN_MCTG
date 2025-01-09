@@ -16,7 +16,7 @@ public class TransactionsPackagesController implements RestController {
     }
 
     public Response handleRequest(Request request) {
-        if (request.getMethod() == Method.POST && request.getPathname().equals("/transactionspackages")) {
+        if (request.getMethod() == Method.POST && request.getPathname().equals("/transactions/packages")) {
             return this.transactionsPackagesService.buyPackage(request);
         }
         return new Response(
