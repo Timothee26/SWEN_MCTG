@@ -36,6 +36,6 @@ public class TransactionsPackagesService extends AbstractService{
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        return new Response(HttpStatus.OK, ContentType.JSON, json);
+        return new Response(HttpStatus.CREATED, ContentType.JSON, "");
     }
 }

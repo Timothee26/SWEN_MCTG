@@ -33,6 +33,6 @@ public class PackageService extends AbstractService{
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-        return new Response(HttpStatus.CREATED, ContentType.JSON, json);
+        return new Response(HttpStatus.CREATED, ContentType.JSON, "");
     }
 }

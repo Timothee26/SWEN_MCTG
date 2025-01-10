@@ -56,22 +56,25 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
     }
     public void updateCoins(String username) {
         String sql = "UPDATE userdb.user set coins = ? where Username = ?";
+        int coins = findCoins(username);
+        if (coins-5 >= 0) {
+            try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {
+                stmt.setInt(1, coins - 5);
+                stmt.setString(2, username);
+                int rowsInserted = stmt.executeUpdate();
+                if (rowsInserted > 0) {
+                    System.out.println("Row updated successfully.");
+                } else {
+                    System.out.println("No rows updated.");
+                }
 
-        try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql))
-        {
-            stmt.setInt(1, findCoins(username)-5);
-            stmt.setString(2, username);
-            int rowsInserted = stmt.executeUpdate();
-            if (rowsInserted > 0) {
-                System.out.println("Row updated successfully.");
-            } else {
-                System.out.println("No rows updated.");
+            } catch (SQLException e) {
+                throw new DataAccessException("Select nicht erfolgreich", e);
             }
-
-        } catch (SQLException e) {
-            throw new DataAccessException("Select nicht erfolgreich", e);
+            unitOfWork.commitTransaction();
+        }else{
+            throw new DataAccessException("not enough coins");
         }
-        unitOfWork.commitTransaction();
     }
 
     public String getUsername(String token){

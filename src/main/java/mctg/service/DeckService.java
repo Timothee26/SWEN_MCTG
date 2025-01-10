@@ -61,7 +61,7 @@ public class DeckService extends AbstractService {
         System.out.println(header);
 
         List<Card> deckCollection = deckRepository.getDeck(header);
-        String json = null;
+        String json = "";
         try {
             json = this.getObjectMapper().writeValueAsString(deckCollection);
         } catch (JsonProcessingException e) {
