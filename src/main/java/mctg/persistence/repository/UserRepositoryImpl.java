@@ -139,9 +139,11 @@ public class UserRepositoryImpl implements UserRepository {
     /**
      * checks if the user is registered
      * creates new login user and uploads the username and the created token
+     *
      * @param user
+     * @return
      */
-    public void login(User user) {
+    public String login(User user) {
         System.out.println("login wird irgendwo aufgerufen");
         Collection<User> isRegistered = findInLogin(user.getUsername());
         if(isRegistered == null){
@@ -165,6 +167,8 @@ public class UserRepositoryImpl implements UserRepository {
             System.out.println("ist schon vorhanden");
             throw new DataAccessException("User " + user.getUsername() + " already exists");
         }
+        System.out.println(user.createToken());
+        return user.createToken();
     }
 
     public String getUsername(String token){

@@ -39,12 +39,14 @@ public class UserService extends AbstractService{
         }catch (JsonProcessingException e) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Invalid JSON format.\" }");
         }
+
+        String userCollection = userRepository.login(user);
+        String json = null;
         try {
-            userRepository.login(user);
-        } catch (Exception e) {
+            json = this.getObjectMapper().writeValueAsString(userCollection);
+        } catch (JsonProcessingException e) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Failed to insert registration data.\" }");
         }
-        String json = null;
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
 

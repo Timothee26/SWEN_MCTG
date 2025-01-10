@@ -12,7 +12,7 @@ import java.util.List;
 public interface UserRepository {
     Collection<User> findInLogin(String username);
     Collection<User> findAllUser(String username);
-    void login(User user);
+    String login(User user);
     void registerUpload(User user);
     List<String> getData(String token, String username);
     List<String> editData(String token, UserData data, String username);
