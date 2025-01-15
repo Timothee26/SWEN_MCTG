@@ -11,6 +11,9 @@ import mctg.persistence.repository.BattlesRepository;
 import mctg.persistence.repository.BattlesRepositoryImpl;
 import mctg.persistence.repository.DeckRepository;
 import mctg.persistence.repository.DeckRepositoryImpl;
+import mctg.persistence.repository.UserRepository;
+import mctg.persistence.repository.UserRepositoryImpl;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,10 +26,12 @@ import java.util.Random;
 public class BattlesService extends AbstractService{
     private BattlesRepository battlesRepository;
     private DeckRepository deckRepository;
+    private UserRepository userRepository;
 
     public BattlesService(){
         battlesRepository = new BattlesRepositoryImpl(new UnitOfWork());
         deckRepository = new DeckRepositoryImpl(new UnitOfWork());
+        userRepository = new UserRepositoryImpl(new UnitOfWork());
     }
 
     int randomCard(int size){
@@ -86,7 +91,7 @@ public class BattlesService extends AbstractService{
         Player2 = deckRepository.getDeck(tokens.get(1));
         int round = 0;
 
-        while(!Player1.isEmpty() && !Player2.isEmpty()/* && round < 100*/){
+        while(!(Player1.isEmpty()) && !(Player2.isEmpty()) && round < 100){
             round++;
             Card card1 = Player1.get(randomCard(Player1.size()));
             Card card2 = Player2.get(randomCard(Player2.size()));
@@ -114,24 +119,33 @@ public class BattlesService extends AbstractService{
             float card1Damage = checkTypeAndEffectiveness(card1, card2);
             float card2Damage = checkTypeAndEffectiveness(card2, card1);
             if(card1Damage > card2Damage){
-                System.out.println("Player1 won with: "+card1.getName()+"("+card1Damage+")"+" won against "+card2.getName()+"("+card2Damage+")");
+                System.out.println(card1.getBought()+" won with: "+card1.getName()+"("+card1Damage+")"+" won against "+card2.getName()+"("+card2Damage+")");
                 Player1.add(card2);
                 Player2.remove(card2);
             }else if (card1Damage < card2Damage){
-                System.out.println("Player2 won with: "+card2.getName()+"("+card2Damage+")"+" won against "+card1.getName()+"("+card1Damage+")");
+                System.out.println(card2.getBought()+" won with: "+card2.getName()+"("+card2Damage+")"+" won against "+card1.getName()+"("+card1Damage+")");
                 Player2.add(card1);
                 Player1.remove(card1);
+            }else{
+                System.out.println("This round is a tie");
+                continue;
             }
+            System.out.println(Player1.size());
+            System.out.println(Player2.size());
         }
 
         if(Player1.isEmpty()){
             System.out.println("Player 2 won");
+            userRepository.updateStats(tokens.get(1),tokens.get(0));
         }else if (Player2.isEmpty()){
             System.out.println("Player 1 won");
+            userRepository.updateStats(tokens.get(0),tokens.get(1));
+
         }else{
             System.out.println("over 100 rounds");
-            System.out.println("Player1 has "+ Player1.size()+" cards left");
-            System.out.println("Player2 has "+ Player2.size()+" cards left");
+            System.out.println("Player1 has "+ Player1.size() + " cards left");
+            System.out.println("Player2 has "+ Player2.size() + " cards left");
+            userRepository.updateTies(tokens.get(0),tokens.get(1));
         }
     }
 

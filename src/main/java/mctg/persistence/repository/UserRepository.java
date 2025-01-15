@@ -16,4 +16,9 @@ public interface UserRepository {
     void registerUpload(User user);
     List<String> getData(String token, String username);
     List<String> editData(String token, UserData data, String username);
-}
+    List<String> getStats(String token);
+    List<String> updateStats(String token1,String token2);
+    List<String> updateTies(String token1, String token2);
+    List<String> getElo(String token);
+
+    }

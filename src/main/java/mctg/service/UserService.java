@@ -130,4 +130,50 @@ public class UserService extends AbstractService{
         }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
+
+    public Response getStats(Request request) {
+        String header = request.getHeaderMap().getHeader("Authorization");
+        String parts[] = header.split(" ");
+        if (parts.length >1) {
+            header = parts[1];
+        }else{
+            header = parts[0];
+        }
+        if (header == null || header.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
+        }
+        List<String> userController = userRepository.getStats(header);
+
+        String json = null;
+        try {
+            json = this.getObjectMapper().writeValueAsString(userController);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return new Response(HttpStatus.OK, ContentType.JSON, json);
+
+    }
+
+    public Response getScoreboard(Request request) {
+        String header = request.getHeaderMap().getHeader("Authorization");
+        String parts[] = header.split(" ");
+        if (parts.length >1) {
+            header = parts[1];
+        }else{
+            header = parts[0];
+        }
+        if (header == null || header.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
+        }
+        List<String> userController = userRepository.getElo(header);
+
+        String json = null;
+        try {
+            json = this.getObjectMapper().writeValueAsString(userController);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return new Response(HttpStatus.OK, ContentType.JSON, json);
+
+    }
 }

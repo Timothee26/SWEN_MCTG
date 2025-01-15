@@ -35,6 +35,10 @@ public class UserController implements RestController {
             String name[] = request.getPathname().split("/");
             String username = name[name.length - 1];
             return this.userService.editUser(request,username);
+        }else if (request.getMethod() == Method.GET && request.getPathname().equals("/stats")) {
+            return this.userService.getStats(request);
+        }else if (request.getMethod() == Method.GET && request.getPathname().equals("/scoreboard")) {
+            return this.userService.getScoreboard(request);
         }
         return new Response(
                 HttpStatus.BAD_REQUEST,
