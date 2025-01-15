@@ -57,6 +57,7 @@ public class UserService extends AbstractService{
     public Response registerUser(Request request) {
         String body = request.getBody();
         if (body == null || body.isEmpty()) {
+            System.out.println("body ist leer");
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
 
@@ -70,7 +71,7 @@ public class UserService extends AbstractService{
         try {
             userRepository.registerUpload(user);
         } catch (Exception e) {
-            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Failed to insert registration data.\" }");
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Failed to insert registration data.\" }"+e.getMessage());
         }
 
         return new Response(HttpStatus.CREATED, ContentType.JSON, "{ \"message\": \"registration data added successfully.\" }");

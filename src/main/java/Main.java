@@ -29,6 +29,7 @@ public class Main {
         router.addService("/battles", new BattlesController());
         router.addService("/stats", new UserController());
         router.addService("/scoreboard", new UserController());
+        router.addService("/tradings", new TradingController());
 
         return router;
     }

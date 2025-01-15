@@ -119,8 +119,9 @@ public class UserRepositoryImpl implements UserRepository {
             }
             unitOfWork.commitTransaction();
 
-            sql = "INSERT INTO userdb.user (Name) VALUES (?)";
+            /*sql = "Update userdb.user (Name) VALUES (?) where username=?";
             try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+                stmt.setString(1, user.getUsername());
                 stmt.setString(1, user.getUsername());
                 int rowsInserted = stmt.executeUpdate();
                 if (rowsInserted > 0) {
@@ -131,7 +132,7 @@ public class UserRepositoryImpl implements UserRepository {
             } catch (SQLException e) {
                 throw new DataAccessException("Could not insert into database", e);
             }
-            unitOfWork.commitTransaction();
+            unitOfWork.commitTransaction();*/
 
         }
     }
@@ -357,11 +358,11 @@ public class UserRepositoryImpl implements UserRepository {
         String sql = "SELECT Elo, Name from userdb.user Order by Elo desc";
         try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
             ResultSet resultSet = stmt.executeQuery();
-
             while (resultSet.next()) {
                 userElos.add(String.valueOf(resultSet.getInt(1)));
                 userElos.add(resultSet.getString(2));
             }
+
         }catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
