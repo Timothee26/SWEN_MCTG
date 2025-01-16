@@ -4,7 +4,10 @@ import httpserver.http.ContentType;
 import httpserver.http.HttpStatus;
 import httpserver.server.Request;
 import httpserver.server.Response;
+import mctg.model.Card;
+import mctg.model.User;
 import mctg.persistence.UnitOfWork;
+import mctg.model.Trade;
 import mctg.persistence.repository.TradingRepository;
 import mctg.persistence.repository.TradingRepositoryImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,5 +37,37 @@ public class TradingService extends AbstractService {
             throw new RuntimeException(e);
         }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
+    }
+
+    public Response createTrade(Request request){
+        String header = request.getHeaderMap().getHeader("Authorization");
+        String parts[] = header.split(" ");
+        if (parts.length >1) {
+            header = parts[1];
+        }else{
+            header = parts[0];
+        }
+        if (header == null || header.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
+        }
+
+        Trade trade;
+        String body = request.getBody();
+        if (body == null || body.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"smth went wrong\"}");
+        }
+
+        try{
+            trade = this.getObjectMapper().readValue(request.getBody(), Trade.class);
+        }catch (JsonProcessingException e) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Invalid JSON format.\" }");
+        }
+
+        try {
+            tradingRepository.createTrade(header, trade);
+        } catch (Exception e) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Failed to insert registration data.\" }"+e.getMessage());
+        }
+        return new Response(HttpStatus.CREATED, ContentType.JSON, "{ \"message\": \"registration data added successfully.\" }");
     }
 }

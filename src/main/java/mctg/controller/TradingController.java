@@ -18,6 +18,8 @@ public class TradingController implements RestController {
     public Response handleRequest(Request request) {
         if(request.getMethod() == Method.GET && request.getPathname().equals("/tradings")) {
             return this.tradingService.getTrades(request);
+        }else if(request.getMethod() == Method.POST && request.getPathname().equals("/tradings")) {
+            return this.tradingService.createTrade(request);
         }
         return new Response(
                 HttpStatus.BAD_REQUEST,
