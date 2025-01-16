@@ -8,7 +8,8 @@ import java.util.Collection;
 import java.util.List;
 
 public interface TradingRepository {
-    List<String> getTradingOffers(String token);
+    List<Trade> getTradingOffers(String token);
     void createTrade(String token, Trade trade);
+    List<Trade> acceptTradingOffer(String token, String cardId, String offerId);
 
 }

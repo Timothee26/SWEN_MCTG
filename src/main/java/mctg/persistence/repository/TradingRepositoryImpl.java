@@ -1,10 +1,14 @@
 package mctg.persistence.repository;
 
+import mctg.model.Card;
 import mctg.model.Trade;
 import mctg.model.UserData;
 import mctg.persistence.DataAccessException;
+import mctg.persistence.repository.CardsRepository;
+import mctg.persistence.repository.CardsRepositoryImpl;
 import mctg.persistence.UnitOfWork;
 import mctg.model.User;
+import org.json.JSONObject;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,10 +19,11 @@ import java.util.List;
 
 public class TradingRepositoryImpl implements TradingRepository {
     private UnitOfWork unitOfWork;
-
+    private CardsRepository cardsRepository;
     public TradingRepositoryImpl(UnitOfWork unitOfWork){
 
         this.unitOfWork = unitOfWork;
+        cardsRepository = new CardsRepositoryImpl(unitOfWork);
     }
 
     public String getUsername(String token){
@@ -47,18 +52,21 @@ public class TradingRepositoryImpl implements TradingRepository {
     }
 
     @Override
-    public List<String> getTradingOffers(String token) {
+    public List<Trade> getTradingOffers(String token) {
         String username = getUsername(token);
-        List<String> tradingOffers = new ArrayList<>();
+        List<Trade> tradingOffers = new ArrayList<>();
 
         String sql = "SELECT * from userdb.trades";
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
-                tradingOffers.add("ID: " + resultSet.getString(1));
-                tradingOffers.add("CardID: " + resultSet.getString(2));
-                tradingOffers.add("Type: " + resultSet.getString(3));
-                tradingOffers.add("Damage: " + resultSet.getString(4));
+                Trade getTrade = new Trade();
+                getTrade.setId(resultSet.getString(1));
+                getTrade.setCardToTrade(resultSet.getString(2));
+                getTrade.setType(resultSet.getString(3));
+                getTrade.setMinimumDamage(resultSet.getFloat(4));
+                getTrade.setUser(resultSet.getString(5));
+                tradingOffers.add(getTrade);
             }
         }catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
@@ -66,22 +74,120 @@ public class TradingRepositoryImpl implements TradingRepository {
         return tradingOffers;
     }
 
+    public boolean checkCardOwner(String username, String cardId){
+        String sql = "SELECT bought from userdb.package where Id = ?";
+        try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+            stmt.setString(1, cardId);
+            ResultSet resultSet = stmt.executeQuery();
+            if(resultSet.next() && resultSet.getString(1).equals(username)){
+                return true;
+            }
+        }catch (SQLException e) {
+            throw new DataAccessException("Could not insert into database", e);
+        }
+        return false;
+    }
+
+    public boolean checkDeckOwner(String username, String cardId){
+        String sql = "SELECT id, bought from userdb.deck where id = ?";
+        try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+            stmt.setString(1, cardId);
+            ResultSet resultSet = stmt.executeQuery();
+            if(resultSet.next() && resultSet.getString(1).equals(cardId) && resultSet.getString(2).equals(username)){
+                return true;
+            }
+        }catch (SQLException e) {
+            throw new DataAccessException("Could not select from database", e);
+        }
+        return false;
+    }
     @Override
     public void createTrade(String token, Trade trade) {
         String username = getUsername(token);
-        String sql = "INSERT INTO userdb.trades (Id, CardToTrade, Type, MinimumDamage, Username) VALUES (?, ?, ?, ?, ?)";
+        if(checkCardOwner(username, trade.getCardToTrade())){
+            if (!checkDeckOwner(username, trade.getCardToTrade())){
+                String sql = "INSERT INTO userdb.trades (Id, CardToTrade, Type, MinimumDamage, Username) VALUES (?, ?, ?, ?, ?)";
+                try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+                    stmt.setString(1, trade.getId());
+                    stmt.setString(2, trade.getCardToTrade());
+                    stmt.setString(3, trade.getType());
+                    stmt.setFloat(4,trade.getMinimumDamage());
+                    stmt.setString(5, username);
+                    stmt.executeUpdate();
+                }catch (SQLException e) {
+                    throw new DataAccessException("Could not insert into database", e);
+                }
+                unitOfWork.commitTransaction();
+            }
+        }
+    }
+
+    public Trade getTrade(String offerId){
+        Trade trade = new Trade();
+        String sql = "SELECT * from userdb.trades where id = ?";
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
-            stmt.setString(1, trade.getId());
-            stmt.setString(2, trade.getCardToTrade());
-            stmt.setString(3, trade.getType());
-            stmt.setFloat(4,trade.getMinimumDamage());
-            stmt.setString(5, username);
-            stmt.executeUpdate();
+            stmt.setString(1, offerId);
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                trade.setId(resultSet.getString(1));
+                trade.setCardToTrade(resultSet.getString(2));
+                trade.setType(resultSet.getString(3));
+                trade.setMinimumDamage(resultSet.getFloat(4));
+                trade.setUser(resultSet.getString(5));
+            }
         }catch (SQLException e) {
             throw new DataAccessException("Could not insert into database", e);
         }
         unitOfWork.commitTransaction();
+        return trade;
+    }
 
-        //return null;
+    public boolean deleteTrade(String offerId){
+        String sql = "DELETE FROM userdb.trades WHERE id = ?";
+        try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+            stmt.setString(1, offerId);
+            int rowsInserted = stmt.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("Row inserted successfully.");
+            } else {
+                System.out.println("No rows inserted.");
+                return false;
+            }
+        }catch (SQLException e) {
+            throw new DataAccessException("Could not insert into database", e);
+        }
+        unitOfWork.commitTransaction();
+        return true;
+    }
+
+    @Override
+    public List<Trade> acceptTradingOffer(String token, String cardId, String offerId) {
+        String username = getUsername(token);
+        if(!checkCardOwner(username,cardId)){
+            throw new DataAccessException("the card does not belong to the user");
+        }
+        Trade trade = getTrade(offerId);
+        Card card = cardsRepository.getCard(cardId);
+        System.out.println(card.getDamage());
+        if(card.getDamage() < trade.getMinimumDamage()){
+            throw new DataAccessException("the damage of the card is not enough");
+        }
+        if ((card.getName().contains("Spell") && !(trade.getType().contains("spell"))) || (!(card.getName().contains("Spell")) && trade.getType().contains("spell"))) {
+            throw new DataAccessException("the type of the card is incorrect");
+        }
+        if (card.getBought().equals(trade.getUser())){
+            throw new DataAccessException("you cannot trade with yourself");
+        }
+        String tempUser = trade.getUser();
+        String cardTradeId = trade.getCardToTrade();
+        Card cardToTrade = cardsRepository.getCard(cardTradeId);
+        if (!(cardsRepository.updateUser(cardToTrade.getId(), card.getBought()) && cardsRepository.updateUser(card.getId(), tempUser))) {
+            throw new DataAccessException("the trade was not successful");
+        }
+        if (!deleteTrade(offerId)) {
+            throw new DataAccessException("delete trade failed");
+
+        }
+        return null;
     }
 }

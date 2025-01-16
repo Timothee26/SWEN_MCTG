@@ -37,6 +37,7 @@ public class DeckRepositoryImpl implements DeckRepository {
             }catch (SQLException e) {
                 throw new DataAccessException("Select nicht erfolgreich", e);
             }
+            unitOfWork.commitTransaction();
         }
         return cards;
     }

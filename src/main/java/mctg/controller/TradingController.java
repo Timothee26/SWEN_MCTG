@@ -20,6 +20,10 @@ public class TradingController implements RestController {
             return this.tradingService.getTrades(request);
         }else if(request.getMethod() == Method.POST && request.getPathname().equals("/tradings")) {
             return this.tradingService.createTrade(request);
+        }else if(request.getMethod() == Method.POST && request.getPathname().contains("/tradings/")) {
+            String name[] = request.getPathname().split("/");
+            String tradeId = name[name.length - 1];
+            return this.tradingService.acceptTrade(request, tradeId);
         }
         return new Response(
                 HttpStatus.BAD_REQUEST,
