@@ -99,4 +99,32 @@ public class TradingService extends AbstractService {
         return new Response(HttpStatus.OK, ContentType.JSON, json);
 
     }
+
+    public Response deleteTrade(Request request, String tradeId){
+        String header = request.getHeaderMap().getHeader("Authorization");
+        String parts[] = header.split(" ");
+        if (parts.length >1) {
+            header = parts[1];
+        }else{
+            header = parts[0];
+        }
+        if (header == null || header.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"header is empty\"}");
+        }
+
+        String body = request.getBody().replace("\"", "");
+        if (body == null || body.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"smth went wrong\"}");
+        }
+
+        String tradingController = tradingRepository.deleteTradingOffer(header, tradeId);
+        String json = null;
+        try {
+            json = this.getObjectMapper().writeValueAsString(tradingController);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return new Response(HttpStatus.OK, ContentType.JSON, json);
+
+    }
 }

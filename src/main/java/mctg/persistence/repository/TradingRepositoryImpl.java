@@ -190,4 +190,28 @@ public class TradingRepositoryImpl implements TradingRepository {
         }
         return null;
     }
+
+    @Override
+    public String deleteTradingOffer(String token, String offerId) {
+        String username = getUsername(token);
+        Trade trade = getTrade(offerId);
+        if (!(trade.getUser().equals(username))) {
+            throw new DataAccessException("this is not your trade");
+        }
+        String sql = "DELETE FROM userdb.trades WHERE id = ?";
+        try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+            stmt.setString(1, offerId);
+            int rowsInserted = stmt.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("Row deleted successfully.");
+            } else {
+                System.out.println("No rows deleted.");
+                throw new DataAccessException("No rows deleted");
+            }
+        }catch (SQLException e) {
+            throw new DataAccessException("Could not delete trade", e);
+        }
+        unitOfWork.commitTransaction();
+        return "";
+    }
 }

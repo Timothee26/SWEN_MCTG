@@ -24,6 +24,10 @@ public class TradingController implements RestController {
             String name[] = request.getPathname().split("/");
             String tradeId = name[name.length - 1];
             return this.tradingService.acceptTrade(request, tradeId);
+        }else if(request.getMethod() == Method.DELETE && request.getPathname().contains("/tradings/")) {
+            String name[] = request.getPathname().split("/");
+            String tradeId = name[name.length - 1];
+            return this.tradingService.deleteTrade(request, tradeId);
         }
         return new Response(
                 HttpStatus.BAD_REQUEST,
