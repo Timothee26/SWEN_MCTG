@@ -9,6 +9,7 @@ public interface UserRepositoryTest {
     User getUser();
     User login();
     String getUsernameTest(String token);
-    List<String> getEditStats(String username);
+    User getEditStats(String username);
+    User getUpdateStatsTest(String username);
 
 }

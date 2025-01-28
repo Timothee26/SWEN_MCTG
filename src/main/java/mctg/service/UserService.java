@@ -89,7 +89,7 @@ public class UserService extends AbstractService{
         if (header == null || header.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Heather is empty\"}");
         }
-        List<String> userController = userRepository.getData(header, username);
+        User userController = userRepository.getData(header, username);
         String json = null;
         try {
             json = this.getObjectMapper().writeValueAsString(userController);
@@ -144,7 +144,7 @@ public class UserService extends AbstractService{
         if (header == null || header.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
-        List<String> userController = userRepository.getStats(header);
+        User userController = userRepository.getStats(header);
 
         String json = null;
         try {
@@ -167,7 +167,7 @@ public class UserService extends AbstractService{
         if (header == null || header.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
-        List<String> userController = userRepository.getElo(header);
+        List<User> userController = userRepository.getElo(header);
 
         String json = null;
         try {

@@ -100,23 +100,48 @@ public class UserRepositoryTestImpl implements UserRepositoryTest {
         return null;
     }
 
-    public List<String> getEditStats(String username){
-        List<String> userDetails = new ArrayList<>();
+    public User getEditStats(String username){
+        User user = null;
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement("""
                 SELECT Name, Bio, Image, from userdb."user" where username = ?""")){
             stmt.setString(1, username);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
-                userDetails.add(resultSet.getString("Name"));
-                userDetails.add(resultSet.getString("Bio"));
-                userDetails.add(resultSet.getString("Image"));
+                user = User.builder()
+                        .name(resultSet.getString("Name"))
+                        .bio(resultSet.getString("Bio"))
+                        .image(resultSet.getString("Image"))
+                        .build();
             } else {
                 throw new DataAccessException("User not found in the database.");
             }
         }catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
-        return userDetails;
+        return user;
+    }
+
+    public User getUpdateStatsTest(String username){
+        User user = null;
+        try(PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                SELECT username, Wins, Losses, Ties, Elo from userdb."user" where username = ?""")){
+            stmt.setString(1, username);
+            ResultSet resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
+                user = User.builder()
+                        .username(resultSet.getString("username"))
+                        .wins(resultSet.getInt("Wins"))
+                        .losses(resultSet.getInt("Losses"))
+                        .ties(resultSet.getInt("Ties"))
+                        .elo(resultSet.getInt("Elo"))
+                        .build();
+            } else {
+                throw new DataAccessException("User not found in the database.");
+            }
+        }catch (SQLException e) {
+            throw new DataAccessException("Select nicht erfolgreich", e);
+        }
+        return user;
     }
 
 }

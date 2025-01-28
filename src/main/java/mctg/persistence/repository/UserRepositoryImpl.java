@@ -208,12 +208,11 @@ public class UserRepositoryImpl implements UserRepository {
         return null;
     }
 
-    public List<String> getData(String token, String username) {
+    public User getData(String token, String username) {
         if (!username.equals(getUsername(token))) {
             return null;
         }
-        //String sql = "SELECT * from userdb.user where username = ?";
-        List<String> userDetails = new ArrayList<>();
+        User user = null;
 
         try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
                 SELECT * from userdb."user" where username = ?""")) {
@@ -221,9 +220,11 @@ public class UserRepositoryImpl implements UserRepository {
             ResultSet resultSet = stmt.executeQuery();
 
             if (resultSet.next()) {
-                userDetails.add(resultSet.getString("Name"));
-                userDetails.add(resultSet.getString("Bio"));
-                userDetails.add(resultSet.getString("Image"));
+                user = User.builder()
+                        .name(resultSet.getString("Name"))
+                        .bio(resultSet.getString("Bio"))
+                        .image(resultSet.getString("Image"))
+                        .build();
             } else {
                 throw new DataAccessException("User not found in the database.");
             }
@@ -231,7 +232,7 @@ public class UserRepositoryImpl implements UserRepository {
         } catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
-        return userDetails;
+        return user;
     }
 
     @Override
@@ -242,6 +243,7 @@ public class UserRepositoryImpl implements UserRepository {
         //String sql = "Update userdb.user set Name = ?, Bio = ?, Image = ? where username = ?";
         try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
                 Update userdb."user" set Name = ?, Bio = ?, Image = ? where username = ?""")) {
+
             stmt.setString(1, data.getName());
             stmt.setString(2, data.getBio());
             stmt.setString(3, data.getImage());
@@ -260,21 +262,49 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<String> getStats(String token) {
+    public User getStats(String token) {
         String username = getUsername(token);
-        List<String> userStats = new ArrayList<>();
+        User user = null;
 
-        String sql = "SELECT Name, Wins, Losses, Ties, Elo from userdb.user where username = ?";
-        try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+        try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                SELECT Name, Wins, Losses, Ties, Elo from userdb."user" where username = ?""")){
             stmt.setString(1, username);
             ResultSet resultSet = stmt.executeQuery();
 
             if (resultSet.next()) {
-                userStats.add("Name: " + resultSet.getString("Name"));
-                userStats.add("Wins: " + resultSet.getInt("Wins"));
-                userStats.add("Losses: " + resultSet.getInt("Losses"));
-                userStats.add("Ties: " + resultSet.getInt("Ties"));
-                userStats.add("Elo: " + resultSet.getInt("Elo"));
+                user = User.builder()
+                        .name(resultSet.getString("Name"))
+                        .wins(resultSet.getInt("Wins"))
+                        .losses(resultSet.getInt("Losses"))
+                        .ties(resultSet.getInt("Ties"))
+                        .elo(resultSet.getInt("Elo"))
+                        .build();
+
+            } else {
+                throw new DataAccessException("User not found in the database.");
+            }
+        }catch (SQLException e) {
+            throw new DataAccessException("Select nicht erfolgreich", e);
+        }
+        unitOfWork.commitTransaction();
+        return user;
+    }
+
+    User getUserStatsUpdate(String username) {
+        User userStats = null;
+
+        try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                SELECT Wins, Losses, Ties, Elo from userdb."user" where username = ?""")){
+            stmt.setString(1, username);
+            ResultSet resultSet = stmt.executeQuery();
+
+            if (resultSet.next()) {
+                userStats = User.builder()
+                        .wins(resultSet.getInt("Wins"))
+                        .losses(resultSet.getInt("Losses"))
+                        .ties(resultSet.getInt("Ties"))
+                        .elo(resultSet.getInt("Elo"))
+                        .build();
             } else {
                 throw new DataAccessException("User not found in the database.");
             }
@@ -285,49 +315,26 @@ public class UserRepositoryImpl implements UserRepository {
         return userStats;
     }
 
-    List<Integer> getUserStatsUpdate(String username) {
-        String sql = "SELECT Wins, Losses, Ties, Elo from userdb.user where username = ?";
-        List<Integer> userStats = new ArrayList<>();
-
-        try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
-            stmt.setString(1, username);
-            ResultSet resultSet = stmt.executeQuery();
-
-            if (resultSet.next()) {
-                userStats.add(resultSet.getInt(1));
-                userStats.add(resultSet.getInt(2));
-                userStats.add(resultSet.getInt(3));
-                userStats.add(resultSet.getInt(4));
-            } else {
-                throw new DataAccessException("User not found in the database.");
-            }
-        }catch (SQLException e) {
-            throw new DataAccessException("Select nicht erfolgreich", e);
-        }
-        unitOfWork.commitTransaction();
-        return userStats;
-    }
-
-    public List<String> updateStats(String token1,String token2) {
+    public User updateStats(String token1,String token2) {
         String user1 = getUsername(token1);
         String user2 = getUsername(token2);
 
-        List<Integer> userStats1 = getUserStatsUpdate(user1);
-        String sql = "Update userdb.user set Wins = ?, Elo = ? where username = ?";
-        try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {
-            stmt.setInt(1, userStats1.get(0)+1);
-            stmt.setInt(2, userStats1.get(3)+3);
+        User userStats1 = getUserStatsUpdate(user1);
+        try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                Update userdb."user" set Wins = ?, Elo = ? where username = ?""")) {
+            stmt.setInt(1, userStats1.getWins()+1);
+            stmt.setInt(2, userStats1.getElo()+3);
             stmt.setString(3,user1);
             stmt.executeUpdate();
         }catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
 
-        List<Integer> userStats2 = getUserStatsUpdate(user2);
-        sql = "Update userdb.user set Losses = ?, Elo = ? where username = ?";
-        try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {
-            stmt.setInt(1, userStats2.get(1)+1);
-            stmt.setInt(2, userStats2.get(3)-5);
+        User userStats2 = getUserStatsUpdate(user2);
+        try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                Update userdb."user" set Losses = ?, Elo = ? where username = ?""")) {
+            stmt.setInt(1, userStats2.getLosses()+1);
+            stmt.setInt(2, userStats2.getElo()-5);
             stmt.setString(3,user2);
             stmt.executeUpdate();
         }catch (SQLException e) {
@@ -337,22 +344,23 @@ public class UserRepositoryImpl implements UserRepository {
         return null;
     }
 
-    public List<String> updateTies(String token1,String token2) {
+    public User updateTies(String token1,String token2) {
         String user1 = getUsername(token1);
         String user2 = getUsername(token2);
-        List<Integer> userStats1 = getUserStatsUpdate(user1);
-        String sql = "Update userdb.user set Ties = ? where username = ?";
-        try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {
-            stmt.setInt(1, userStats1.get(2)+1);
+        User userStats1 = getUserStatsUpdate(user1);
+        try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                Update userdb."user" set Ties = ? where username = ?""")) {
+            stmt.setInt(1, userStats1.getTies()+1);
             stmt.setString(2, user1);
             stmt.executeUpdate();
         }catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
 
-        List<Integer> userStats2 = getUserStatsUpdate(user2);
-        try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {
-            stmt.setInt(1, userStats2.get(2)+1);
+       User userStats2 = getUserStatsUpdate(user2);
+        try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                Update userdb."user" set Ties = ? where username = ?""")) {
+            stmt.setInt(1, userStats2.getTies()+1);
             stmt.setString(2, user2);
             stmt.executeUpdate();
         }catch (SQLException e) {
@@ -363,22 +371,26 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<String> getElo(String token) {
+    public List<User> getElo(String token) {
+        List<User> users = new ArrayList<>();
         String username = getUsername(token);
-        List<String> userElos = new ArrayList<>();
-        String sql = "SELECT Elo, Name from userdb.user Order by Elo desc";
-        try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+        User user = null;
+        try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                SELECT Elo, Name from userdb."user" Order by Elo desc""")){
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
-                userElos.add(String.valueOf(resultSet.getInt(1)));
-                userElos.add(resultSet.getString(2));
+                user = User.builder()
+                        .elo(resultSet.getInt("Elo"))
+                        .name(resultSet.getString("Name"))
+                        .build();
+                users.add(user);
             }
 
         }catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
         unitOfWork.commitTransaction();
-        return userElos;
+        return users;
     }
 }
 

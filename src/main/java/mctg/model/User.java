@@ -27,6 +27,12 @@ public class User {
     private int ties;
     @JsonAlias({"Coins"})
     private int coins;
+    @JsonAlias({"Name"})
+    private String name;
+    @JsonAlias({"Bio"})
+    private String bio;
+    @JsonAlias({"Image"})
+    private String image;
 
     //needed for curlskript
     /*public User() {}
@@ -47,6 +53,9 @@ public class User {
     public int getElo() {return elo;}
     public int getTies() {return ties;}
     public int getCoins() {return coins;}
+    public String getName() {return name;}
+    public String getBio() {return bio;}
+    public String getImage() {return image;}
 
     public String createToken() {
         /*SecureRandom random = new SecureRandom();

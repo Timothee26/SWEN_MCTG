@@ -250,10 +250,10 @@ public class UserServiceTest {
         String username = "test";
         String token = "test-mtcgToken";
         loginTest();
-        List<String> userDetails = userRepository.getData(token, username);
-        assertEquals(null, userDetails.get(0));
-        assertEquals(null, userDetails.get(1));
-        assertEquals(null, userDetails.get(2));
+        User userDetails = userRepository.getData(token, username);
+        assertEquals(null, userDetails.getName());
+        assertEquals(null, userDetails.getBio());
+        assertEquals(null, userDetails.getImage());
     }
     @Test
     public void editDataTest(){
@@ -269,22 +269,89 @@ public class UserServiceTest {
         userdata.setImage("hallo");
         loginTest();
         userRepository.editData(token, userdata, username);
-        List<String> resultUserDetails =userRepositoryTest.getEditStats(username);
-        assertEquals("test", resultUserDetails.get(0));
-        assertEquals("neu", resultUserDetails.get(1));
-        assertEquals("hallo", resultUserDetails.get(2));
+        User resultUserDetails =userRepositoryTest.getEditStats(username);
+        assertEquals("test", resultUserDetails.getName());
+        assertEquals("neu", resultUserDetails.getBio());
+        assertEquals("hallo", resultUserDetails.getImage());
     }
 
 
    @Test
-   public void getStatsTestNotLoggedIn(){
+   public void getStatsTest(){
        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login.sql'";
        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
        userRepository = new UserRepositoryImpl(unitOfWork);
        userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
        String token = "test-mtcgToken";
-       userRepository.getStats(token);
-       assertEquals(null, userRepository.getStats(token));
+       loginTest();
+       User user = userRepository.getStats(token);
+       assertEquals(null, user.getName());
+       assertEquals(0, user.getWins());
+       assertEquals(0, user.getLosses());
+       assertEquals(0, user.getTies());
+       assertEquals(100, user.getElo());
    }
+
+   @Test
+   public void updateStatsTest(){
+       String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:updateStatsTest.sql'";
+       UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+       userRepository = new UserRepositoryImpl(unitOfWork);
+       userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+       String username1 = "test1";
+       String username2 = "test2";
+       String token1 = "test1-mtcgToken";
+       String token2 = "test2-mtcgToken";
+       userRepository.updateStats(token1, token2);
+       User user1 = userRepositoryTest.getUpdateStatsTest(username1);
+       User user2 = userRepositoryTest.getUpdateStatsTest(username2);
+       assertEquals(username1, user1.getUsername());
+       assertEquals(1, user1.getWins());
+       assertEquals(103, user1.getElo());
+
+       assertEquals(username2, user2.getUsername());
+       assertEquals(1, user2.getLosses());
+       assertEquals(95, user2.getElo());
+   }
+
+   @Test
+   public void updateTiesTest(){
+       String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:updateStatsTest.sql'";
+       UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+       userRepository = new UserRepositoryImpl(unitOfWork);
+       userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+       String username1 = "test1";
+       String username2 = "test2";
+       String token1 = "test1-mtcgToken";
+       String token2 = "test2-mtcgToken";
+       userRepository.updateTies(token1, token2);
+       User user1 = userRepositoryTest.getUpdateStatsTest(username1);
+       User user2 = userRepositoryTest.getUpdateStatsTest(username2);
+       assertEquals(username1, user1.getUsername());
+       assertEquals(0, user1.getWins());
+       assertEquals(1, user1.getTies());
+       assertEquals(100, user1.getElo());
+
+       assertEquals(username2, user2.getUsername());
+       assertEquals(0, user2.getLosses());
+       assertEquals(1, user2.getTies());
+       assertEquals(100, user2.getElo());
+   }
+
+    @Test
+    public void getEloTest(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:updateStatsTest.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        userRepository = new UserRepositoryImpl(unitOfWork);
+        userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+        String token1 = "test1-mtcgToken";
+        Collection<User> user = userRepository.getElo(token1);
+        List<User> users = user.stream().toList();
+        assertEquals(103, users.get(0).getElo());
+        assertEquals("test1", users.get(0).getName());
+
+        assertEquals(95, users.get(1).getElo());
+        assertEquals("test2", users.get(1).getName());
+    }
 
 }

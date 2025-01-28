@@ -14,12 +14,13 @@ public interface UserRepository {
     Collection<User> findAllUser(String username, String password);
     String login(User user);
     void registerUpload(User user);
-    List<String> getData(String token, String username);
+    User getData(String token, String username);
     List<String> editData(String token, UserData data, String username);
-    List<String> getStats(String token);
-    List<String> updateStats(String token1,String token2);
-    List<String> updateTies(String token1, String token2);
-    List<String> getElo(String token);
+    User getStats(String token);
+    User updateStats(String token1,String token2);
+    User updateTies(String token1, String token2);
+    List<User> getElo(String token);
     String getUsername(String token);
 
     }
+
