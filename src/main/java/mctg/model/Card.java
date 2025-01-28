@@ -1,6 +1,13 @@
 package mctg.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 
 public class Card {
     @JsonAlias({"Id"})
@@ -13,15 +20,16 @@ public class Card {
     private String bought;
     @JsonAlias({"ElementType"})
     private String elementType;
+    @JsonAlias({"Pid"})
+    private int pid;
 
-    public Card(){}
-    public Card(String Id, String Name, float Damage, String Bought/*, String type*/) {
+   /* public Card(String Id, String Name, float Damage, String Bought, String type) {
         this.id = Id;
         this.name = Name;
         this.damage = Damage;
         this.bought = Bought;
         this.elementType = elementType;
-    }
+    }*/
 
     public String getId() {return id;}
 
@@ -32,6 +40,8 @@ public class Card {
     public String getBought() {return bought;}
 
     public String getElementType() {return elementType;}
+
+    public int getPid() {return pid;}
 
     public void setId(String id) {
         this.id = id;
@@ -52,5 +62,6 @@ public class Card {
     public void setElementType(String elementType) {
         this.elementType = elementType;
     }
+    public void setPid(int pid) {}
 
 }

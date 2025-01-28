@@ -307,11 +307,11 @@ public class UserServiceTest {
        User user2 = userRepositoryTest.getUpdateStatsTest(username2);
        assertEquals(username1, user1.getUsername());
        assertEquals(1, user1.getWins());
-       assertEquals(103, user1.getElo());
+       assertEquals(106, user1.getElo());
 
        assertEquals(username2, user2.getUsername());
        assertEquals(1, user2.getLosses());
-       assertEquals(95, user2.getElo());
+       assertEquals(90, user2.getElo());
    }
 
    @Test
@@ -330,12 +330,12 @@ public class UserServiceTest {
        assertEquals(username1, user1.getUsername());
        assertEquals(0, user1.getWins());
        assertEquals(1, user1.getTies());
-       assertEquals(100, user1.getElo());
+       assertEquals(103, user1.getElo());
 
        assertEquals(username2, user2.getUsername());
        assertEquals(0, user2.getLosses());
        assertEquals(1, user2.getTies());
-       assertEquals(100, user2.getElo());
+       assertEquals(95, user2.getElo());
    }
 
     @Test
