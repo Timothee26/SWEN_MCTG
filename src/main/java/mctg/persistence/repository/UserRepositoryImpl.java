@@ -62,13 +62,14 @@ public class UserRepositoryImpl implements UserRepository {
      * @return
      */
     @Override
-    public Collection<User> findAllUser(String username) {
+    public Collection<User> findAllUser(String username, String password) {
         try (PreparedStatement preparedStatement = this.unitOfWork.prepareStatement("""
                     select * from userdb."user"
-                    where username = ?
+                    where username = ? and password = ?
                     """))
         {
             preparedStatement.setString(1, username);
+            preparedStatement.setString(2, password);
             ResultSet resultSet = preparedStatement.executeQuery();
             Collection<User> userRows = new ArrayList<>();
             while(resultSet.next())
@@ -97,7 +98,7 @@ public class UserRepositoryImpl implements UserRepository {
      */
     @Override
     public void registerUpload(User user) {
-        Collection<User> isRegistered = findAllUser(user.getUsername());
+        Collection<User> isRegistered = findAllUser(user.getUsername(),user.getPassword());
         if (isRegistered != null) {
             System.out.println("ist schon vorhanden");
             throw new DataAccessException("User " + user.getUsername() + " already exists");
@@ -149,8 +150,9 @@ public class UserRepositoryImpl implements UserRepository {
      */
     public String login(User user) {
         System.out.println("login wird irgendwo aufgerufen");
-        Collection<User> isRegistered = findInLogin(user.getUsername());
-        if(isRegistered == null){
+        Collection<User> isLoggedIn = findInLogin(user.getUsername());
+        Collection<User> isRegistered = findAllUser(user.getUsername(),user.getPassword());
+        if(isLoggedIn == null && isRegistered != null){
             String sql = "INSERT INTO userdb.login (Username, token) VALUES (?, ?)";
             try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
                 stmt.setString(1, user.getUsername());
@@ -169,7 +171,13 @@ public class UserRepositoryImpl implements UserRepository {
         }
         else{
             System.out.println("ist schon vorhanden");
-            throw new DataAccessException("User " + user.getUsername() + " already exists");
+            if(isLoggedIn != null){
+                throw new DataAccessException("User " + user.getUsername() + " already logged in");
+
+            }else{
+                throw new DataAccessException("User " + user.getUsername() + " does not exists");
+
+            }
         }
         System.out.println(user.createToken());
         return user.createToken();

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface UserRepository {
     Collection<User> findInLogin(String username);
-    Collection<User> findAllUser(String username);
+    Collection<User> findAllUser(String username, String password);
     String login(User user);
     void registerUpload(User user);
     List<String> getData(String token, String username);

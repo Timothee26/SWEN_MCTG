@@ -87,38 +87,126 @@ public class UserServiceTest {
 
 
     @Test
-    public void loginTest(){
-        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login_user.sql'";
+    public void findAllUserTest() {
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:register_user.sql'";
         UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
         userRepository = new UserRepositoryImpl(unitOfWork);
         userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
         String username = "test";
         String password = "test";
         User user = User.builder().username(username).password(password).build();
-        userRepository.login(user);
-
-        User testuser = userRepositoryTest.login();
-
-        assertEquals(username, testuser.getUsername());
-        assertEquals("test-mtcgToken", testuser.getToken());
+        userRepository.registerUpload(user);
+        Collection<User> testuser = userRepository.findAllUser(user.getUsername(), user.getPassword());
+        assertEquals(1, testuser.size());
+        assertEquals(username, testuser.iterator().next().getUsername());
+        assertEquals(password, testuser.iterator().next().getPassword());
     }
 
     @Test
-    public void loginTestFail(){
-        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login_user.sql'";
+    public void findAllUserTestNotExist() {
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:register_user.sql'";
         UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
         userRepository = new UserRepositoryImpl(unitOfWork);
         userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
         String username = "test";
         String password = "test";
         User user = User.builder().username(username).password(password).build();
-        userRepository.login(user);
+        Collection<User> testuser = userRepository.findAllUser(user.getUsername(), user.getPassword());
+        assertEquals(null, testuser);
+    }
 
-        User testuser = userRepositoryTest.login();
+
+    @Test
+    public void findInLoginTest(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        userRepository = new UserRepositoryImpl(unitOfWork);
+        userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+        String username = "test";
+        String password = "test";
+        User user = User.builder().username(username).password(password).build();
+        userRepository.registerUpload(user);
+        userRepository.login(user);
+        Collection<User> testuser = userRepository.findInLogin(user.getUsername());
+        assertEquals(1, testuser.size());
+        assertEquals(username, testuser.iterator().next().getUsername());
+        assertEquals("test-mtcgToken", testuser.iterator().next().getToken());
+    }
+
+    @Test
+    public void findInLoginTestNotLoggedIn(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        userRepository = new UserRepositoryImpl(unitOfWork);
+        userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+        String username = "test";
+        String password = "test";
+        User user = User.builder().username(username).password(password).build();
+        userRepository.registerUpload(user);
+        Collection<User> testuser = userRepository.findInLogin(user.getUsername());
+        assertEquals(null, testuser);
+    }
+
+
+    @Test
+    public void loginNotRegistratedTest(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        userRepository = new UserRepositoryImpl(unitOfWork);
+        userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+        String username = "test";
+        String password = "test";
+        User user = User.builder().username(username).password(password).build();
+
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            userRepository.login(user);
+        });
+
+        assertTrue(exception.getMessage().contains("User test does not exists"));
+    }
+
+
+
+    @Test
+    public void loginTest(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        userRepository = new UserRepositoryImpl(unitOfWork);
+        userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+        String username = "test";
+        String password = "test";
+        User user = User.builder().username(username).password(password).build();
+        userRepository.registerUpload(user);
+        User testuser = userRepositoryTest.getUser();
+        userRepository.login(testuser);
+
+        User loginUser = userRepositoryTest.login();
+
+        assertEquals(username, loginUser.getUsername());
+        assertEquals("test-mtcgToken", loginUser.getToken());
+    }
+
+
+    @Test
+    public void loginTestFail(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        userRepository = new UserRepositoryImpl(unitOfWork);
+        userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+        String username = "test";
+        String password = "test";
+        User user = User.builder().username(username).password(password).build();
+        userRepository.registerUpload(user);
+        User testuser = userRepositoryTest.getUser();
+        userRepository.login(testuser);
+
+        User loginUser = userRepositoryTest.login();
 
         assertEquals(username, testuser.getUsername());
-        assertNotEquals("test-mtgToken", testuser.getToken());
+        assertNotEquals("test-mtgToken", loginUser.getToken());
 
     }
+
+
 
 }
