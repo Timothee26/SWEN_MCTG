@@ -196,7 +196,7 @@ public class UserRepositoryImpl implements UserRepository {
                         .token(resultSet.getString(2))
                         .build();
                 System.out.println("user.token:" + user.getToken());
-                if(user.getToken().contains(token)){
+                if(user.getToken().equals(token)){
                     System.out.println("user gefunden");
                     return user.getUsername();
                 }
@@ -212,17 +212,18 @@ public class UserRepositoryImpl implements UserRepository {
         if (!username.equals(getUsername(token))) {
             return null;
         }
-        String sql = "SELECT * from userdb.user where username = ?";
+        //String sql = "SELECT * from userdb.user where username = ?";
         List<String> userDetails = new ArrayList<>();
 
-        try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {
+        try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                SELECT * from userdb."user" where username = ?""")) {
             stmt.setString(1, username);
             ResultSet resultSet = stmt.executeQuery();
 
             if (resultSet.next()) {
-                userDetails.add("Name: " + resultSet.getString("Name"));
-                userDetails.add("Bio: " + resultSet.getString("Bio"));
-                userDetails.add("Image: " + resultSet.getString("Image"));
+                userDetails.add(resultSet.getString("Name"));
+                userDetails.add(resultSet.getString("Bio"));
+                userDetails.add(resultSet.getString("Image"));
             } else {
                 throw new DataAccessException("User not found in the database.");
             }
@@ -238,10 +239,9 @@ public class UserRepositoryImpl implements UserRepository {
         if (!username.equals(getUsername(token))) {
             return null;
         }
-
-
-        String sql = "Update userdb.user set Name = ?, Bio = ?, Image = ? where username = ?";
-        try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {
+        //String sql = "Update userdb.user set Name = ?, Bio = ?, Image = ? where username = ?";
+        try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                Update userdb."user" set Name = ?, Bio = ?, Image = ? where username = ?""")) {
             stmt.setString(1, data.getName());
             stmt.setString(2, data.getBio());
             stmt.setString(3, data.getImage());

@@ -1,6 +1,7 @@
 package MonsterCardTradingGameTest.service;
 
 import mctg.model.User;
+import mctg.model.UserData;
 import mctg.persistence.DataAccessException;
 import mctg.persistence.UnitOfWork;
 import mctg.persistence.repository.UserRepository;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.*;
 import org.postgresql.core.ConnectionFactory;
 
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -207,6 +209,82 @@ public class UserServiceTest {
 
     }
 
+    @Test
+    public void getUsernameTestNotLoggedIn(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        userRepository = new UserRepositoryImpl(unitOfWork);
+        userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+        String token = "test-mtgToken";
+        userRepository.getUsername(token);
+        assertEquals(null, userRepository.getUsername(token));
+    }
 
+    @Test
+    public void getUsernameTestLoggedIn(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        userRepository = new UserRepositoryImpl(unitOfWork);
+        userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+        String token = "test-mtcgToken";
+        loginTest();
+        assertEquals("test", userRepository.getUsername(token));
+    }
+
+    @Test
+    public void getUsernameTestLoggedInDatabase(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:getUsernameTest.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        userRepository = new UserRepositoryImpl(unitOfWork);
+        userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+        String token = "neu-mtcgToken";
+        assertEquals("neu", userRepositoryTest.getUsernameTest(token));
+    }
+
+    @Test
+    public void getDataTest(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        userRepository = new UserRepositoryImpl(unitOfWork);
+        userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+        String username = "test";
+        String token = "test-mtcgToken";
+        loginTest();
+        List<String> userDetails = userRepository.getData(token, username);
+        assertEquals(null, userDetails.get(0));
+        assertEquals(null, userDetails.get(1));
+        assertEquals(null, userDetails.get(2));
+    }
+    @Test
+    public void editDataTest(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        userRepository = new UserRepositoryImpl(unitOfWork);
+        userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+        String username = "test";
+        String token = "test-mtcgToken";
+        UserData userdata = new UserData();
+        userdata.setName("test");
+        userdata.setBio("neu");
+        userdata.setImage("hallo");
+        loginTest();
+        userRepository.editData(token, userdata, username);
+        List<String> resultUserDetails =userRepositoryTest.getEditStats(username);
+        assertEquals("test", resultUserDetails.get(0));
+        assertEquals("neu", resultUserDetails.get(1));
+        assertEquals("hallo", resultUserDetails.get(2));
+    }
+
+
+   @Test
+   public void getStatsTestNotLoggedIn(){
+       String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:login.sql'";
+       UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+       userRepository = new UserRepositoryImpl(unitOfWork);
+       userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
+       String token = "test-mtcgToken";
+       userRepository.getStats(token);
+       assertEquals(null, userRepository.getStats(token));
+   }
 
 }

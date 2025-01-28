@@ -20,4 +20,9 @@ public class UserData{
     public String getName() {return name;}
     public String getBio() {return bio;}
     public String getImage() {return image;}
+
+    public void setName(String name) {this.name = name;}
+    public void setBio(String bio) {this.bio = bio;}
+    public void setImage(String image) {this.image = image;}
+
 }

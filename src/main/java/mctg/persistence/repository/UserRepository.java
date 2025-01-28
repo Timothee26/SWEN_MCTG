@@ -20,5 +20,6 @@ public interface UserRepository {
     List<String> updateStats(String token1,String token2);
     List<String> updateTies(String token1, String token2);
     List<String> getElo(String token);
+    String getUsername(String token);
 
     }
