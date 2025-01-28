@@ -34,7 +34,10 @@ public class PackageRepositoryImpl implements PackageRepository {
     }
 
     @Override
-    public void createPackage(List<Card> cards){
+    public void createPackage(List<Card> cards, String token){
+        if(!token.contains("admin")){
+            throw new DataAccessException("you are not an admin");
+        }
         int pid = getPid()+1;
         for(Card card : cards){
             String sql = "INSERT INTO userdb.package (id, name, damage, pid, bought, type) VALUES (?, ?, ?, ?, ?, ?)";

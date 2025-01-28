@@ -4,5 +4,5 @@ import mctg.model.Card;
 import java.util.List;
 
 public interface PackageRepository {
-    void createPackage(List<Card> cards);
+    void createPackage(List<Card> cards, String token);
 }

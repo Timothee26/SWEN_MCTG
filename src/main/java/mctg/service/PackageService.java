@@ -20,13 +20,24 @@ public class PackageService extends AbstractService{
     public PackageService(){packageRepository = new PackageRepositoryImpl(new UnitOfWork());}
 
     public Response createPackage(Request request){
+        String header = request.getHeaderMap().getHeader("Authorization");
+        String parts[] = header.split(" ");
+        if (parts.length >1) {
+            header = parts[1];
+        }else{
+            header = parts[0];
+        }
+        if (header == null || header.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
+        }
+
         String body = request.getBody();
 
         if (body == null || body.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"smth went wrong\"}");
         }
         List<Card> cards = request.getBodyAsList(Card.class);
-        packageRepository.createPackage(cards);
+        packageRepository.createPackage(cards, header);
         String json = null;
         try {
             json = this.getObjectMapper().writeValueAsString(packageRepository);

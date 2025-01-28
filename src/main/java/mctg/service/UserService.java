@@ -45,7 +45,7 @@ public class UserService extends AbstractService{
         try {
             json = this.getObjectMapper().writeValueAsString(userCollection);
         } catch (JsonProcessingException e) {
-            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Failed to insert registration data.\" }");
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Failed to login.\" }");
         }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
@@ -61,9 +61,10 @@ public class UserService extends AbstractService{
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
 
-        User user;
+        User user = null;
         try{
             user = this.getObjectMapper().readValue(request.getBody(), User.class);
+            System.out.println(user.getUsername());
         }catch (JsonProcessingException e) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Invalid JSON format.\" }");
         }
@@ -71,7 +72,7 @@ public class UserService extends AbstractService{
         try {
             userRepository.registerUpload(user);
         } catch (Exception e) {
-            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Failed to insert registration data.\" }"+e.getMessage());
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Failed to insert registration data.\" } "+e.getMessage());
         }
 
         return new Response(HttpStatus.CREATED, ContentType.JSON, "{ \"message\": \"registration data added successfully.\" }");
@@ -86,14 +87,14 @@ public class UserService extends AbstractService{
             header = parts[0];
         }
         if (header == null || header.isEmpty()) {
-            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Heather is empty\"}");
         }
         List<String> userController = userRepository.getData(header, username);
         String json = null;
         try {
             json = this.getObjectMapper().writeValueAsString(userController);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            return new Response(HttpStatus.BAD_REQUEST,ContentType.JSON,json+e.getMessage());
         }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
@@ -127,7 +128,7 @@ public class UserService extends AbstractService{
         try {
             json = this.getObjectMapper().writeValueAsString(userController);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            return new Response(HttpStatus.BAD_REQUEST,ContentType.JSON,json+e.getMessage());
         }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
@@ -149,7 +150,7 @@ public class UserService extends AbstractService{
         try {
             json = this.getObjectMapper().writeValueAsString(userController);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            return new Response(HttpStatus.BAD_REQUEST,ContentType.JSON,json+e.getMessage());
         }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
 
@@ -172,7 +173,7 @@ public class UserService extends AbstractService{
         try {
             json = this.getObjectMapper().writeValueAsString(userController);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            return new Response(HttpStatus.BAD_REQUEST,ContentType.JSON,json+e.getMessage());
         }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
 

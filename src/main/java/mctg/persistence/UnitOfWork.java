@@ -1,6 +1,7 @@
 package mctg.persistence;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -13,6 +14,15 @@ public class UnitOfWork implements AutoCloseable{
             this.connection.setAutoCommit(false);
         } catch (SQLException e) {
             throw new DataAccessException("Autocommit nicht deaktivierbar", e);
+        }
+    }
+
+    public UnitOfWork(String url) {
+        try {
+            this.connection = DriverManager.getConnection(url, "", "");
+            this.connection.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new DataAccessException("testverbindung nicht erfolgreich", e);
         }
     }
 

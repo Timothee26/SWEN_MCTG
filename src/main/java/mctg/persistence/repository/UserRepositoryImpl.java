@@ -31,7 +31,7 @@ public class UserRepositoryImpl implements UserRepository {
         try (PreparedStatement preparedStatement =
                      this.unitOfWork.prepareStatement("""
                     select * from userdb.login
-                    where Username = ?
+                    where username = ?
                 """))
         {
             preparedStatement.setString(1, username);
@@ -39,9 +39,10 @@ public class UserRepositoryImpl implements UserRepository {
             Collection<User> userRows = new ArrayList<>();
             while(resultSet.next())
             {
-                User user = new User(
-                        resultSet.getString(1),
-                        resultSet.getString(2));
+                User user = User.builder()
+                        .username(resultSet.getString(1))
+                        .token(resultSet.getString(2))
+                        .build();
                 userRows.add(user);
             }
             if(!userRows.isEmpty()){
@@ -62,20 +63,20 @@ public class UserRepositoryImpl implements UserRepository {
      */
     @Override
     public Collection<User> findAllUser(String username) {
-        try (PreparedStatement preparedStatement =
-                     this.unitOfWork.prepareStatement("""
-                    select * from userdb.user
-                    where Username = ?
-                """))
+        try (PreparedStatement preparedStatement = this.unitOfWork.prepareStatement("""
+                    select * from userdb."user"
+                    where username = ?
+                    """))
         {
             preparedStatement.setString(1, username);
             ResultSet resultSet = preparedStatement.executeQuery();
             Collection<User> userRows = new ArrayList<>();
             while(resultSet.next())
             {
-                User user = new User(
-                        resultSet.getString(1),
-                        resultSet.getString(2));
+                User user = User.builder()
+                        .username(resultSet.getString("username"))
+                        .password(resultSet.getString("password"))
+                        .build();
                 userRows.add(user);
             }
             if(!userRows.isEmpty()){
@@ -103,8 +104,10 @@ public class UserRepositoryImpl implements UserRepository {
         }
         else{
             System.out.println("ist noch nicht vorhanden");
-            String sql = "INSERT INTO userdb.user (Username, Password, Coins) VALUES (?, ?, ?)";
-            try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+            //String sql = "INSERT INTO userdb.user (Username, Password, Coins) VALUES (?, ?, ?)";
+            try(PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                    INSERT INTO userdb."user" (Username, Password, Coins) VALUES (?, ?, ?)
+                    """)){
                 stmt.setString(1, user.getUsername());
                 stmt.setString(2, user.getPassword());
                 stmt.setInt(3, 20);
@@ -180,12 +183,12 @@ public class UserRepositoryImpl implements UserRepository {
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 System.out.println("in der while");
-                User user = new User(
-                        resultSet.getString(1),
-                        resultSet.getString(2)
-                );
+                User user = User.builder()
+                        .username(resultSet.getString(1))
+                        .token(resultSet.getString(2))
+                        .build();
                 System.out.println("user.token:" + user.getToken());
-                if(user.getPassword().contains(token)){
+                if(user.getToken().contains(token)){
                     System.out.println("user gefunden");
                     return user.getUsername();
                 }

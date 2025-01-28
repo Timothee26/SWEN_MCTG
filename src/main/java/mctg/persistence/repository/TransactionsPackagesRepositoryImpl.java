@@ -85,12 +85,12 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 System.out.println("in der while");
-                User user = new User(
-                        resultSet.getString(1),
-                        resultSet.getString(2)
-                );
+                User user = User.builder()
+                        .username(resultSet.getString("username"))
+                        .token(resultSet.getString("token"))
+                        .build();
                 System.out.println("user.token:" + user.getToken());
-                if(user.getPassword().contains(token)){
+                if(user.getToken().contains(token)){
                     System.out.println("user gefunden");
                     return user.getUsername();
                 }
