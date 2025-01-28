@@ -33,12 +33,12 @@ public class CardsService extends AbstractService {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
 
-        List<String> cardCollection = cardsRepository.showCards(header);
+        List<Card> cardCollection = cardsRepository.showCards(header);
         String json = null;
         try {
             json = this.getObjectMapper().writeValueAsString(cardCollection);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, json);
         }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }

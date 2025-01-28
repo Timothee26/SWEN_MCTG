@@ -53,14 +53,14 @@ public class CardsRepositoryImpl implements CardsRepository {
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
             stmt.setString(1, cardId);
             ResultSet resultSet = stmt.executeQuery();
-            if(resultSet.next()){
+            if(resultSet.next() && resultSet.getInt(1) > 0){
                 return true;
+            }else{
+                throw new DataAccessException("Could not select card");
             }
         }catch (SQLException e) {
             throw new DataAccessException("Could not select card", e);
         }
-        unitOfWork.commitTransaction();
-        return false;
     }
 
     public boolean updateUser(String cardId, String username){
@@ -104,23 +104,24 @@ public class CardsRepositoryImpl implements CardsRepository {
         return cards;
     }
 
-    public List<String> showCards(String token){
+    public List<Card> showCards(String token){
         String username = getUsername(token);
         String sql = "SELECT Id, Name, Damage, Type FROM userdb.package WHERE bought = ?";
-        List<String> cards = new ArrayList<>();
+        List<Card> cards = new ArrayList<>();
 
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
             stmt.setString(1, username);
             ResultSet resultSet = stmt.executeQuery();
 
             while (resultSet.next()) {
-                JSONObject card = new JSONObject();
-                card.put("Id", resultSet.getString("Id"));
-                card.put("Name", resultSet.getString("Name"));
-                card.put("Damage", resultSet.getString("Damage"));
-                card.put("ElementType", resultSet.getString("Type"));
+                Card card = Card.builder()
+                        .id(resultSet.getString("id"))
+                        .name(resultSet.getString("name"))
+                        .damage(resultSet.getFloat("damage"))
+                        .elementType(resultSet.getString("type"))
+                        .build();
 
-                cards.add(card.toString());
+                cards.add(card);
                 System.out.println("Found card: " + card);
             }
         }catch (SQLException e) {

@@ -9,3 +9,9 @@ CREATE TABLE userdb.package (
     bought varchar(200),
     type varchar(200)
 );
+
+CREATE TABLE userdb.login (
+                              username varchar(250),
+                              "token" varchar(250)
+);
+

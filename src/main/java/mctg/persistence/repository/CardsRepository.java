@@ -5,7 +5,8 @@ import mctg.model.Card;
 import java.util.List;
 
 public interface CardsRepository {
-    List<String> showCards(String token);
+    List<Card> showCards(String token);
     Card getCard(String cardId);
+    boolean cardExists(String cardId);
     boolean updateUser(String cardId, String username);
 }
