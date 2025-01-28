@@ -39,8 +39,8 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
     }
 
     public int findCoins(String username) {
-        String sql = "select coins from userdb.user where Username = ?";
-        try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql))
+        try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                select coins from userdb."user" where Username = ?"""))
         {
             stmt.setString(1, username);
             ResultSet resultSet = stmt.executeQuery();
@@ -55,10 +55,10 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
         }
     }
     public void updateCoins(String username) {
-        String sql = "UPDATE userdb.user set coins = ? where Username = ?";
         int coins = findCoins(username);
         if (coins-5 >= 0) {
-            try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {
+            try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
+                    UPDATE userdb."user" set coins = ? where Username = ?""")) {
                 stmt.setInt(1, coins - 5);
                 stmt.setString(2, username);
                 int rowsInserted = stmt.executeUpdate();
