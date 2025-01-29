@@ -10,10 +10,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransactionsPackagesRepositoryRepositoryTestImpl implements TransactionsPackagesRepositoryRepositoryTest{
+public class TransactionsPackagesRepositoryTestImpl implements TransactionsPackagesRepositoryTest{
     private UnitOfWork unitOfWork;
 
-    public TransactionsPackagesRepositoryRepositoryTestImpl(UnitOfWork unitOfWork) {
+    public TransactionsPackagesRepositoryTestImpl(UnitOfWork unitOfWork) {
         this.unitOfWork = unitOfWork;
     }
 

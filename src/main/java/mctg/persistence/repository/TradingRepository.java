@@ -12,5 +12,9 @@ public interface TradingRepository {
     void createTrade(String token, Trade trade);
     List<Trade> acceptTradingOffer(String token, String cardId, String offerId);
     String deleteTradingOffer(String token, String offerId);
+    boolean checkCardOwner(String username, String cardId);
+    boolean checkDeckOwner(String username, String cardId);
+    Trade getTrade(String offerId);
+    boolean deleteTrade(String offerId);
 
 }

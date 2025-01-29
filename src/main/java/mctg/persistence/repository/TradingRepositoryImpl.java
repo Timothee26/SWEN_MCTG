@@ -118,7 +118,11 @@ public class TradingRepositoryImpl implements TradingRepository {
                     throw new DataAccessException("Could not insert into database", e);
                 }
                 unitOfWork.commitTransaction();
+            }else{
+                throw new DataAccessException("Card is in Deck");
             }
+        }else{
+            throw new DataAccessException("You are not the owner of this card");
         }
     }
 
@@ -128,18 +132,20 @@ public class TradingRepositoryImpl implements TradingRepository {
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
             stmt.setString(1, offerId);
             ResultSet resultSet = stmt.executeQuery();
-            while (resultSet.next()) {
+            if (resultSet.next()) {
                 trade.setId(resultSet.getString(1));
                 trade.setCardToTrade(resultSet.getString(2));
                 trade.setType(resultSet.getString(3));
                 trade.setMinimumDamage(resultSet.getFloat(4));
                 trade.setUser(resultSet.getString(5));
+                unitOfWork.commitTransaction();
+                return trade;
+            } else {
+                throw new DataAccessException("Trade with ID " + offerId + " not found");
             }
-        }catch (SQLException e) {
-            throw new DataAccessException("Could not insert into database", e);
+        } catch (SQLException e) {
+            throw new DataAccessException("Error retrieving trade from database", e);
         }
-        unitOfWork.commitTransaction();
-        return trade;
     }
 
     public boolean deleteTrade(String offerId){

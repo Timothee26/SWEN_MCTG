@@ -1,6 +1,14 @@
 package mctg.model;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.Test;
 
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Trade {
     @JsonAlias({"Id"})
     private String id;
@@ -13,15 +21,15 @@ public class Trade {
     @JsonAlias({"Username"})
     private String username;
 
-    public Trade(){}
+    //public Trade(){}
 
-    public Trade(String Id, String CardToTrade, String Type, float MinimumDamage, String Username) {
+    /*public Trade(String Id, String CardToTrade, String Type, float MinimumDamage, String Username) {
         this.id = Id;
         this.cardToTrade = CardToTrade;
         this.type = Type;
         this.minimumDamage = MinimumDamage;
         this.username = Username;
-    }
+    }*/
     public String getId() {return id;}
     public String getCardToTrade() {return cardToTrade;}
     public String getType() {return type;}

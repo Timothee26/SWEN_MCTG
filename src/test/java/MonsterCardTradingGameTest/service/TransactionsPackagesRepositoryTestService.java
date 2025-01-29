@@ -1,21 +1,14 @@
 package MonsterCardTradingGameTest.service;
 
-import mctg.model.User;
 import mctg.model.Card;
-import mctg.model.UserData;
 import mctg.persistence.DataAccessException;
 import mctg.persistence.UnitOfWork;
-import mctg.persistence.repository.CardsRepositoryImpl;
-import mctg.persistence.repository.PackageRepository;
 import mctg.persistence.repository.TransactionsPackagesRepository;
 import mctg.persistence.repository.TransactionsPackagesRepositoryImpl;
 import MonsterCardTradingGameTest.persistence.*;
 
 import org.junit.jupiter.api.*;
-import org.postgresql.core.ConnectionFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,14 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TransactionsPackagesRepositoryTestService {
     static TransactionsPackagesRepository transactionsPackagesRepository;
-    static TransactionsPackagesRepositoryRepositoryTest transactionsPackagesRepositoryTest;
+    static TransactionsPackagesRepositoryTest transactionsPackagesRepositoryTest;
 
     @Test
     void findCoinsTest(){
         String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:transactionsPackages.sql'";
         UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
         transactionsPackagesRepository = new TransactionsPackagesRepositoryImpl(unitOfWork);
-        transactionsPackagesRepositoryTest = new TransactionsPackagesRepositoryRepositoryTestImpl(unitOfWork);
+        transactionsPackagesRepositoryTest = new TransactionsPackagesRepositoryTestImpl(unitOfWork);
         String username = "test";
 
         assertEquals(20,transactionsPackagesRepository.findCoins(username));
@@ -41,7 +34,7 @@ public class TransactionsPackagesRepositoryTestService {
         String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:transactionsPackages.sql'";
         UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
         transactionsPackagesRepository = new TransactionsPackagesRepositoryImpl(unitOfWork);
-        transactionsPackagesRepositoryTest = new TransactionsPackagesRepositoryRepositoryTestImpl(unitOfWork);
+        transactionsPackagesRepositoryTest = new TransactionsPackagesRepositoryTestImpl(unitOfWork);
         String username = "test";
         transactionsPackagesRepository.updateCoins(username);
         int coins = transactionsPackagesRepositoryTest.getUpdateCoinsTest(username);
@@ -54,7 +47,7 @@ public class TransactionsPackagesRepositoryTestService {
         String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:transactionsPackages.sql'";
         UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
         transactionsPackagesRepository = new TransactionsPackagesRepositoryImpl(unitOfWork);
-        transactionsPackagesRepositoryTest = new TransactionsPackagesRepositoryRepositoryTestImpl(unitOfWork);
+        transactionsPackagesRepositoryTest = new TransactionsPackagesRepositoryTestImpl(unitOfWork);
         String username = "testNOC";
 
         DataAccessException exception = assertThrows(DataAccessException.class, () -> {
@@ -70,7 +63,7 @@ public class TransactionsPackagesRepositoryTestService {
         String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:transactionsPackages.sql'";
         UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
         transactionsPackagesRepository = new TransactionsPackagesRepositoryImpl(unitOfWork);
-        transactionsPackagesRepositoryTest = new TransactionsPackagesRepositoryRepositoryTestImpl(unitOfWork);
+        transactionsPackagesRepositoryTest = new TransactionsPackagesRepositoryTestImpl(unitOfWork);
         String token = "test-mtcg";
         String username = "test";
         transactionsPackagesRepository.buyPackage(token);

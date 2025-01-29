@@ -40,7 +40,7 @@ public class CardsServiceTest {
 
     @Test
     void cardExistsTest(){
-        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:cards_test.sql'";
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:cardsTest.sql'";
         UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
         cardsRepository = new CardsRepositoryImpl(unitOfWork);
         cardsRepositoryTest = new CardsRepositoryTestImpl(unitOfWork);
@@ -51,7 +51,7 @@ public class CardsServiceTest {
 
     @Test
     void updateUserTest() {
-        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:cards_test.sql'";
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:cardsTest.sql'";
         UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
         cardsRepository = new CardsRepositoryImpl(unitOfWork);
         cardsRepositoryTest = new CardsRepositoryTestImpl(unitOfWork);
@@ -72,7 +72,7 @@ public class CardsServiceTest {
 
     @Test
     void getCardTest(){
-        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:cards_test.sql'";
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:cardsTest.sql'";
         UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
         cardsRepository = new CardsRepositoryImpl(unitOfWork);
         cardsRepositoryTest = new CardsRepositoryTestImpl(unitOfWork);
@@ -87,7 +87,7 @@ public class CardsServiceTest {
 
     @Test
     void showCardsTest(){
-        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:cards_test.sql'";
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:cardsTest.sql'";
         UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
         cardsRepository = new CardsRepositoryImpl(unitOfWork);
         cardsRepositoryTest = new CardsRepositoryTestImpl(unitOfWork);
