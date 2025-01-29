@@ -102,7 +102,7 @@ public class DeckRepositoryImpl implements DeckRepository {
     public String getUsername(String token){
         System.out.println("token :" + token);
         System.out.println("in der abfrage");
-        String sql = "SELECT * from userdb.login where token = ?";
+        String sql = "SELECT * from userdb.login WHERE token = ?";
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
             stmt.setString(1, token);
             ResultSet resultSet = stmt.executeQuery();

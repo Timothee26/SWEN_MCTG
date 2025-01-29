@@ -16,8 +16,8 @@ public class BattlesRepositoryImpl implements BattlesRepository {
     public BattlesRepositoryImpl(UnitOfWork unitOfWork) {
 
         this.unitOfWork = unitOfWork;
-        deckRepository = new DeckRepositoryImpl(new UnitOfWork());
-        userRepository = new UserRepositoryImpl(new UnitOfWork());
+        deckRepository = new DeckRepositoryImpl(this.unitOfWork);
+        userRepository = new UserRepositoryImpl(this.unitOfWork);
     }
 
     int randomCard(int size){
@@ -27,7 +27,10 @@ public class BattlesRepositoryImpl implements BattlesRepository {
 
     public float checkTypeAndEffectiveness(Card card1, Card card2){
         if(card1.getName().contains("Spell")){
-            if(card1.getElementType().equals("Water") && card2.getElementType().equals("Fire")){
+            if(card1.getName().contains("Knight") && card2.getName().equals("WaterSpell")) {
+                float effectiveness = 0.0f;
+                return effectiveness;
+            }else if(card1.getElementType().equals("Water") && card2.getElementType().equals("Fire")){
                 return card1.getDamage()*2;
             }else if(card1.getElementType().equals("Fire") && card2.getElementType().equals("Normal")){
                 return card1.getDamage()*2;
@@ -39,8 +42,6 @@ public class BattlesRepositoryImpl implements BattlesRepository {
                 return card1.getDamage() /2;
             } else if(card1.getElementType().equals("Water") && card2.getElementType().equals("Normal")) {
                 return card1.getDamage() /2;
-            }else if(card1.getName().contains("Knight") && card2.getName().equals("WaterSpell")) {
-                return 0;
             }
         }
         return card1.getDamage();
