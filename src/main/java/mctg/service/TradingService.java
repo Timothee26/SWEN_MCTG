@@ -68,7 +68,7 @@ public class TradingService extends AbstractService {
         } catch (Exception e) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{ \"error\": \"Failed to insert registration data.\" }"+e.getMessage());
         }
-        return new Response(HttpStatus.CREATED, ContentType.JSON, "{ \"message\": \"registration data added successfully.\" }");
+        return new Response(HttpStatus.CREATED, ContentType.JSON, "");
     }
 
 
@@ -112,10 +112,10 @@ public class TradingService extends AbstractService {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"header is empty\"}");
         }
 
-        String body = request.getBody().replace("\"", "");
+        /*String body = request.getBody().replace("\"", "");
         if (body == null || body.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"smth went wrong\"}");
-        }
+        }*/
 
         String tradingController = tradingRepository.deleteTradingOffer(header, tradeId);
         String json = null;

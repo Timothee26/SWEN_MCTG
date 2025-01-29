@@ -34,7 +34,7 @@ public class BattlesService extends AbstractService{
         userRepository = new UserRepositoryImpl(new UnitOfWork());
     }
 
-    int randomCard(int size){
+    /*int randomCard(int size){
         Random random = new Random();
         return random.nextInt(size);
     }
@@ -84,11 +84,12 @@ public class BattlesService extends AbstractService{
         return false;
     }
 
-    public void battles(List<String> tokens){
+    public List<String> battles(List<String> tokens){
         List<Card> Player1 = new ArrayList<>();
         List<Card> Player2 = new ArrayList<>();
         Player1 = deckRepository.getDeck(tokens.get(0));
         Player2 = deckRepository.getDeck(tokens.get(1));
+        List<String> battleLog = new ArrayList<>();
         int round = 0;
 
         while(!(Player1.isEmpty()) && !(Player2.isEmpty()) && round < 100){
@@ -101,13 +102,18 @@ public class BattlesService extends AbstractService{
             boolean Player2Luck = luck();
             if(Player1Luck && Player2Luck){
                 System.out.println("beide Player hatten Glück, die Runde wird übersprungen");
+                battleLog.add("beide Player hatten Glück, die Runde wird übersprungen\n");
                 continue;
             } else if (Player1Luck){
                 System.out.println(card1.getBought()+" hatte Glück und bekommt die Karte "+card2.getName()+ " von " + card2.getBought());
+                battleLog.add(card1.getBought()+" hatte Glück und bekommt die Karte "+card2.getName()+ " von " + card2.getBought()+"\n");
+
                 Player1.add(card2);
                 Player2.remove(card2);
             }else if (Player2Luck) {
                 System.out.println(card2.getBought()+" hatte Glück und bekommt die Karte"+card1.getName()+ " von " + card1.getBought());
+                battleLog.add(card2.getBought()+" hatte Glück und bekommt die Karte"+card1.getName()+ " von " + card1.getBought()+"\n");
+
                 Player2.add(card1);
                 Player1.remove(card1);
             }
@@ -120,14 +126,20 @@ public class BattlesService extends AbstractService{
             float card2Damage = checkTypeAndEffectiveness(card2, card1);
             if(card1Damage > card2Damage){
                 System.out.println(card1.getBought()+" won with: "+card1.getName()+"("+card1Damage+")"+" won against "+card2.getName()+"("+card2Damage+")");
+                battleLog.add(card1.getBought()+" won with: "+card1.getName()+"("+card1Damage+")"+" won against "+card2.getName()+"("+card2Damage+")"+"\n");
+
                 Player1.add(card2);
                 Player2.remove(card2);
             }else if (card1Damage < card2Damage){
                 System.out.println(card2.getBought()+" won with: "+card2.getName()+"("+card2Damage+")"+" won against "+card1.getName()+"("+card1Damage+")");
+                battleLog.add(card2.getBought()+" won with: "+card2.getName()+"("+card2Damage+")"+" won against "+card1.getName()+"("+card1Damage+")"+"\n");
+
                 Player2.add(card1);
                 Player1.remove(card1);
             }else{
                 System.out.println("This round is a tie");
+                battleLog.add("This round is a tie"+"\n");
+
                 continue;
             }
             System.out.println(Player1.size());
@@ -136,22 +148,30 @@ public class BattlesService extends AbstractService{
 
         if(Player1.isEmpty()){
             System.out.println("Player 2 won");
+            battleLog.add("Player 2 won"+"\n");
+
             userRepository.updateStats(tokens.get(1),tokens.get(0));
         }else if (Player2.isEmpty()){
             System.out.println("Player 1 won");
+            battleLog.add("Player 1 won"+"\n");
             userRepository.updateStats(tokens.get(0),tokens.get(1));
 
         }else{
             System.out.println("over 100 rounds");
+            battleLog.add("over 100 rounds"+"\n");
             System.out.println("Player1 has "+ Player1.size() + " cards left");
+            battleLog.add("Player1 has \"+ Player1.size() + \" cards left"+"\n");
             System.out.println("Player2 has "+ Player2.size() + " cards left");
+            battleLog.add("Player2 has \"+ Player2.size() + \" cards left"+"\n");
+
             userRepository.updateTies(tokens.get(0),tokens.get(1));
         }
+        return battleLog;
     }
-
+     */
     public List<String> tokens = new ArrayList<>();
-    public Response getTokens(Request request) {
 
+    public Response getTokens(Request request) {
         String header = request.getHeaderMap().getHeader("Authorization");
         String parts[] = header.split(" ");
         if (parts.length >1) {
@@ -168,17 +188,19 @@ public class BattlesService extends AbstractService{
         if (header == null || header.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
+
+        List<String> battlesCollection = null;
         String json = null;
         if(tokens.size() == 2){
-            battles(tokens);
+            battlesCollection = battlesRepository.battles(tokens);
             tokens.clear();
         }
 
-        /*try {
+        try {
             json = this.getObjectMapper().writeValueAsString(battlesCollection);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
-        }*/
+        }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }
 

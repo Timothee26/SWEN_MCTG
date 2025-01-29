@@ -28,14 +28,21 @@ public class TransactionsPackagesService extends AbstractService{
         if (header == null || header.isEmpty()) {
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
-
         List<String> transactionsPackageCollection = transactionsPackagesRepository.buyPackage(header);
-        String json = null;
-        try {
-            json = this.getObjectMapper().writeValueAsString(transactionsPackageCollection);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+
+        if (transactionsPackageCollection.contains("No packages available\"")) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"No packages available\"}");
         }
-        return new Response(HttpStatus.CREATED, ContentType.JSON, "");
+
+        if (transactionsPackageCollection.contains("Not enough money")) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "Not enough money");
+        }
+
+        try {
+            String json = this.getObjectMapper().writeValueAsString(transactionsPackageCollection);
+            return new Response(HttpStatus.CREATED, ContentType.JSON, json);
+        } catch (JsonProcessingException e) {
+            return new Response(HttpStatus.INTERNAL_SERVER_ERROR, ContentType.JSON, "{\"error\": \"Failed to process response\"}");
+        }
     }
 }

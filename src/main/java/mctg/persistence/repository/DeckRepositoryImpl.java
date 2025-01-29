@@ -61,11 +61,21 @@ public class DeckRepositoryImpl implements DeckRepository {
                         stmt.setString(1, username);
                         stmt.executeUpdate();
                     } catch (SQLException e) {
-                        throw new DataAccessException("Select nicht erfolgreich", e);
+                        throw new DataAccessException("Delete unsuccesfull", e);
                     }
                     unitOfWork.commitTransaction();
             }
             System.out.println("User deck does not exist");
+
+            if(cards.size() !=4){
+                throw new DataAccessException("Not enough cards to create deck");
+            }
+            for(Card card : cards){
+                if(!card.getBought().equals(username) ){
+                    throw new DataAccessException("Card does not belong to user");
+                }
+            }
+
             for (Card card : cards) {
                 String sql = "Insert into userdb.deck (Id, Name, Damage, Bought, Type) values (?, ?, ?, ?, ?)";
                 try (PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)) {

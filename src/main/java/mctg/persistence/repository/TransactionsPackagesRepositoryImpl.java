@@ -56,9 +56,11 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
     }
     public void updateCoins(String username) {
         int coins = findCoins(username);
-        if (coins-5 >= 0) {
             try (PreparedStatement stmt = this.unitOfWork.prepareStatement("""
                     UPDATE userdb."user" set coins = ? where Username = ?""")) {
+                if (coins == 0) {
+                    throw new DataAccessException("Not enough money");
+                }
                 stmt.setInt(1, coins - 5);
                 stmt.setString(2, username);
                 int rowsInserted = stmt.executeUpdate();
@@ -72,9 +74,6 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
                 throw new DataAccessException("Select nicht erfolgreich", e);
             }
             unitOfWork.commitTransaction();
-        }else{
-            throw new DataAccessException("not enough coins");
-        }
     }
 
     public String getUsername(String token){
@@ -107,16 +106,20 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
         String username = getUsername(token);
         System.out.println("buyPackage" +username);
         int coins = findCoins(username);
+        /*if(coins-5< 0){
+            throw new DataAccessException("not enough coins");
+        }*/
         System.out.println("buyPackage" +coins);
         List<Integer> pids = getPid();
         if (pids.isEmpty()) {
             System.out.println("No packages available to buy.");
-            return null;
+            return List.of("No packages available");
         }
         if (coins >= 5){
-            Random rand = new Random();
+            /*Random rand = new Random();
             int n = rand.nextInt(pids.size());
-            int selectedPid = pids.get(n);
+            int selectedPid = pids.get(n);*/
+            int selectedPid = pids.get(getPid().size()-getPid().size());
             System.out.println("buyPackage random" + selectedPid);
             String sql = "UPDATE userdb.package set bought=? where pid=?";
             try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
@@ -133,8 +136,12 @@ public class TransactionsPackagesRepositoryImpl implements TransactionsPackagesR
             }
             unitOfWork.commitTransaction();
             updateCoins(username);
+        }else{
+            List<String> empty = new ArrayList<>();
+            empty.add("Not enough money");
+            return empty;
         }
-        return null;
+        return List.of("Package purchased successfully");
     }
 
 

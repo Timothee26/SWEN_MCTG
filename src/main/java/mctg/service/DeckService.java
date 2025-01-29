@@ -65,7 +65,7 @@ public class DeckService extends AbstractService {
         try {
             json = this.getObjectMapper().writeValueAsString(deckCollection);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, json);
         }
         return new Response(HttpStatus.OK, ContentType.JSON, json);
     }

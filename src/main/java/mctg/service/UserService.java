@@ -124,6 +124,10 @@ public class UserService extends AbstractService{
             return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Invalid username or password\"}");
         }
         List<String> userController = userRepository.editData(header, userData, username);
+
+        if(userController == null || userController.isEmpty()) {
+            return new Response(HttpStatus.BAD_REQUEST, ContentType.JSON, "{\"error\": \"Failed to update user data.\" }");
+        }
         String json = null;
         try {
             json = this.getObjectMapper().writeValueAsString(userController);

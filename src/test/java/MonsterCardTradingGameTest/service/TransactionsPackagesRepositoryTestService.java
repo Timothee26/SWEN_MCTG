@@ -55,7 +55,7 @@ public class TransactionsPackagesRepositoryTestService {
             transactionsPackagesRepository.updateCoins(username);
         });
 
-        assertTrue(exception.getMessage().contains("not enough coins"));
+        assertTrue(exception.getMessage().contains("Not enough money"));
 
     }
 
