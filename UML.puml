@@ -1,0 +1,375 @@
+@startuml
+class mctg.controller.EchoController {
++ Response handleRequest(Request)
+}
+
+class mctg.model.Trade {
+- String id
+- String cardToTrade
+- String type
+- float minimumDamage
+- String username
++ String getId()
++ String getCardToTrade()
++ String getType()
++ float getMinimumDamage()
++ String getUser()
++ void setId(String)
++ void setCardToTrade(String)
++ void setType(String)
++ void setMinimumDamage(float)
++ void setUser(String)
+}
+
+
+class mctg.persistence.repository.PackageRepositoryImpl {
+- UnitOfWork unitOfWork
++ int getPid()
++ void createPackage(List<Card>,String)
+}
+
+
+class mctg.controller.PackageController {
+- PackageService packageService
++ Response handleRequest(Request)
+}
+
+
+class mctg.persistence.repository.DeckRepositoryImpl {
+- UnitOfWork unitOfWork
++ List<Card> getCards(List<String>)
++ boolean userDeckExists(List<Card>)
++ List<String> createDeck(List<String>,String)
++ String getUsername(String)
++ List<Card> getDeck(String)
+}
+
+
+class mctg.persistence.UnitOfWork {
++ Connection connection
++ Connection getConnection()
++ void commitTransaction()
++ void rollbackTransaction()
++ void finishWork()
++ PreparedStatement prepareStatement(String)
++ void close()
+}
+
+
+enum mctg.persistence.DatabaseManager {
++  INSTANCE
++ Connection getConnection()
+}
+
+
+class mctg.service.UserService {
+- UserRepository userRepository
++ Response loginUser(Request)
++ Response registerUser(Request)
++ Response getUser(Request,String)
++ Response editUser(Request,String)
++ Response getStats(Request)
++ Response getScoreboard(Request)
+}
+
+
+class mctg.controller.CardsController {
+- CardsService cardsService
++ Response handleRequest(Request)
+}
+
+
+interface mctg.persistence.repository.BattlesRepository {
+~ float checkTypeAndEffectiveness(Card,Card)
+~ boolean checkSpecialties(Card,Card)
+~ List<String> battles(List<String>)
+}
+
+interface mctg.persistence.repository.TransactionsPackagesRepository {
++ List<String> buyPackage(String)
+~ int findCoins(String)
+~ void updateCoins(String)
+~ String getUsername(String)
+}
+
+class mctg.model.Card {
+- String id
+- String name
+- float damage
+- String bought
+- String elementType
+- int pid
++ String getId()
++ String getName()
++ float getDamage()
++ String getBought()
++ String getElementType()
++ int getPid()
++ void setId(String)
++ void setName(String)
++ void setDamage(float)
++ void setBought(String)
++ void setElementType(String)
++ void setPid(int)
+}
+
+
+interface mctg.persistence.repository.UserRepository {
+~ Collection<User> findInLogin(String)
+~ Collection<User> findAllUser(String,String)
+~ String login(User)
+~ void registerUpload(User)
+~ User getData(String,String)
+~ List<String> editData(String,UserData,String)
+~ User getStats(String)
+~ User updateStats(String,String)
+~ User updateTies(String,String)
+~ List<User> getElo(String)
+~ String getUsername(String)
+}
+
+class mctg.service.DeckService {
+- DeckRepository deckRepository
++ Response createDeck(Request)
++ Response getDeck(Request)
+}
+
+
+class mctg.model.User {
+- String username
+- String password
+- String token
+- int wins
+- int losses
+- int elo
+- int ties
+- int coins
+- String name
+- String bio
+- String image
++ String getUsername()
++ void setUsername(String)
++ String getPassword()
++ String getToken()
++ int getWins()
++ int getLosses()
++ int getElo()
++ int getTies()
++ int getCoins()
++ String getName()
++ String getBio()
++ String getImage()
++ String createToken()
++ void setPassword(String)
+}
+
+
+class mctg.service.PackageService {
+- PackageRepository packageRepository
++ Response createPackage(Request)
+}
+
+
+interface mctg.persistence.repository.DeckRepository {
++ List<String> createDeck(List<String>,String)
++ List<Card> getDeck(String)
+~ List<Card> getCards(List<String>)
+~ String getUsername(String)
+}
+
+class mctg.controller.TransactionsPackagesController {
+- TransactionsPackagesService transactionsPackagesService
++ Response handleRequest(Request)
+}
+
+
+interface mctg.persistence.repository.PackageRepository {
+~ void createPackage(List<Card>,String)
+}
+
+class mctg.controller.DeckController {
+- DeckService deckService
++ Response handleRequest(Request)
+}
+
+
+class mctg.persistence.repository.UserRepositoryImpl {
+- UnitOfWork unitOfWork
++ Collection<User> findInLogin(String)
++ Collection<User> findAllUser(String,String)
++ void registerUpload(User)
++ String login(User)
++ String getUsername(String)
++ User getData(String,String)
++ List<String> editData(String,UserData,String)
++ User getStats(String)
+~ User getUserStatsUpdate(String)
++ User updateStats(String,String)
++ User updateTies(String,String)
++ List<User> getElo(String)
+}
+
+
+class mctg.persistence.DataAccessException {
+}
+class mctg.model.UserData {
+- String name
+- String bio
+- String image
++ String getName()
++ String getBio()
++ String getImage()
++ void setName(String)
++ void setBio(String)
++ void setImage(String)
+}
+
+
+class mctg.service.CardsService {
+- CardsRepository cardsRepository
++ Response showCards(Request)
+}
+
+
+class mctg.controller.TradingController {
+- TradingService tradingService
++ Response handleRequest(Request)
+}
+
+
+class mctg.persistence.repository.TradingRepositoryImpl {
+- UnitOfWork unitOfWork
+- CardsRepository cardsRepository
++ String getUsername(String)
++ List<Trade> getTradingOffers(String)
++ boolean checkCardOwner(String,String)
++ boolean checkDeckOwner(String,String)
++ void createTrade(String,Trade)
++ Trade getTrade(String)
++ boolean deleteTrade(String)
++ List<Trade> acceptTradingOffer(String,String,String)
++ String deleteTradingOffer(String,String)
+}
+
+
+class mctg.service.TransactionsPackagesService {
+- TransactionsPackagesRepository transactionsPackagesRepository
++ Response buyPackage(Request)
+}
+
+
+class mctg.persistence.repository.CardsRepositoryImpl {
+- UnitOfWork unitOfWork
++ String getUsername(String)
++ boolean cardExists(String)
++ boolean updateUser(String,String)
++ Card getCard(String)
++ List<Card> showCards(String)
+}
+
+
+class mctg.controller.UserController {
+- UserService userService
++ Response handleRequest(Request)
+}
+
+
+class mctg.service.BattlesService {
+- BattlesRepository battlesRepository
+- DeckRepository deckRepository
+- UserRepository userRepository
++ List<String> tokens
++ Response getTokens(Request)
+}
+
+
+class mctg.persistence.repository.BattlesRepositoryImpl {
+- UnitOfWork unitOfWork
+- DeckRepository deckRepository
+- UserRepository userRepository
+~ int randomCard(int)
++ float checkTypeAndEffectiveness(Card,Card)
++ boolean checkSpecialties(Card,Card)
+~ boolean luck()
++ List<String> battles(List<String>)
+}
+
+
+class mctg.controller.BattlesController {
+- BattlesService battlesService
++ Response handleRequest(Request)
+}
+
+
+interface mctg.persistence.repository.CardsRepository {
+~ List<Card> showCards(String)
+~ Card getCard(String)
+~ boolean cardExists(String)
+~ boolean updateUser(String,String)
+~ String getUsername(String)
+}
+
+class mctg.service.TradingService {
+- TradingRepository tradingRepository
++ Response getTrades(Request)
++ Response createTrade(Request)
++ Response acceptTrade(Request,String)
++ Response deleteTrade(Request,String)
+}
+
+
+class mctg.persistence.repository.TransactionsPackagesRepositoryImpl {
+- UnitOfWork unitOfWork
++ List<Integer> getPid()
++ int findCoins(String)
++ void updateCoins(String)
++ String getUsername(String)
++ List<String> buyPackage(String)
+}
+
+
+interface mctg.persistence.repository.TradingRepository {
+~ List<Trade> getTradingOffers(String)
+~ void createTrade(String,Trade)
+~ List<Trade> acceptTradingOffer(String,String,String)
+~ String deleteTradingOffer(String,String)
+~ boolean checkCardOwner(String,String)
+~ boolean checkDeckOwner(String,String)
+~ Trade getTrade(String)
+~ boolean deleteTrade(String)
+~ String getUsername(String)
+}
+
+class mctg.service.AbstractService {
+- ObjectMapper objectMapper
++ ObjectMapper getObjectMapper()
+}
+
+
+
+
+httpserver.server.RestController <|.. mctg.controller.EchoController
+mctg.persistence.repository.PackageRepository <|.. mctg.persistence.repository.PackageRepositoryImpl
+httpserver.server.RestController <|.. mctg.controller.PackageController
+mctg.persistence.repository.DeckRepository <|.. mctg.persistence.repository.DeckRepositoryImpl
+mctg.persistence.AutoCloseable <|.. mctg.persistence.UnitOfWork
+mctg.service.AbstractService <|-- mctg.service.UserService
+httpserver.server.RestController <|.. mctg.controller.CardsController
+mctg.service.AbstractService <|-- mctg.service.DeckService
+mctg.service.AbstractService <|-- mctg.service.PackageService
+httpserver.server.RestController <|.. mctg.controller.TransactionsPackagesController
+httpserver.server.RestController <|.. mctg.controller.DeckController
+mctg.persistence.repository.UserRepository <|.. mctg.persistence.repository.UserRepositoryImpl
+mctg.persistence.RuntimeException <|-- mctg.persistence.DataAccessException
+mctg.service.AbstractService <|-- mctg.service.CardsService
+httpserver.server.RestController <|.. mctg.controller.TradingController
+mctg.persistence.repository.TradingRepository <|.. mctg.persistence.repository.TradingRepositoryImpl
+mctg.service.AbstractService <|-- mctg.service.TransactionsPackagesService
+mctg.persistence.repository.CardsRepository <|.. mctg.persistence.repository.CardsRepositoryImpl
+httpserver.server.RestController <|.. mctg.controller.UserController
+mctg.service.AbstractService <|-- mctg.service.BattlesService
+mctg.persistence.repository.BattlesRepository <|.. mctg.persistence.repository.BattlesRepositoryImpl
+httpserver.server.RestController <|.. mctg.controller.BattlesController
+mctg.service.AbstractService <|-- mctg.service.TradingService
+mctg.persistence.repository.TransactionsPackagesRepository <|.. mctg.persistence.repository.TransactionsPackagesRepositoryImpl
+@enduml
