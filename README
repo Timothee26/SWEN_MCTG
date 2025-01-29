@@ -20,14 +20,47 @@ Then, execute the following SQL scripts (schema should already exist and if ther
 
     CREATE SCHEMA IF NOT EXISTS userdb AUTHORIZATION userdb;
 
-    CREATE TABLE userdb.user (
-        Username varchar(200)  NULL,
-        Password varchar(200)  NULL
+    CREATE TABLE userdb."user" (
+        username varchar(250),
+        "password" varchar(250),
+        coins int DEFAULT 20,
+        name varchar(200),
+        bio varchar(200),
+        image varchar(200),
+        wins int DEFAULT 0,
+        losses int DEFAULT 0,
+        "ties" int DEFAULT 0,
+        elo int DEFAULT 100
     );
 
     CREATE TABLE userdb.login (
-        Username varchar(200) NULL,
-        token varchar(200) NULL
+        username varchar(250),
+        "token" varchar(250)
+    );
+
+    CREATE TABLE userdb.package (
+        id varchar(200),
+        "name" varchar(200),
+        damage float,
+        pid int,
+        bought varchar(200),
+        type varchar(200)
+    );
+
+    CREATE TABLE userdb.deck (
+        id varchar(200),
+        "name" varchar(200),
+        damage float,
+        bought varchar(200),
+        "type" varchar(200)
+    );
+
+    CREATE TABLE userdb.trades (
+        id varchar(200),
+        cardtotrade varchar(200),
+        "type" varchar(200),
+        minimumdamage float,
+        username varchar(200)
     );
 
 After having done this step, the webserver can be started. For that, the Main.java (path: src/main/java/Main.java) can be started by pressing the "play"-button.
@@ -51,3 +84,239 @@ Create a new collection with the different methods that are implemented.
         {
           "Username": "<username>"
         }
+
+3.  Method: POST
+    URL: http://localhost:10001/package
+    heather: (Name) Authorization, (Value) Bearer admin-mtcgToken
+    format: JSON
+    request-body:
+        [
+          {
+            "Id": "jdhvjahvef-37d0-426e-994e-43fc3ac83c08",
+            "Name": "WaterGoblin",
+            "Damage": 10
+          },
+          {
+            "Id": "jahsdvf -7c86-4d06-9a80-641c2019a79f",
+            "Name": "WaterSpell",
+            "Damage": 20
+          },
+          {
+            "Id": "vshd-bdb2-47e5-b6e4-68c5ab389334",
+            "Name": "Ork",
+            "Damage": 45
+          },
+          {
+            "Id": "sdnmf -e25e-4a95-aa2c-782823f36e2a",
+            "Name": "Dragon",
+            "Damage": 50
+          },
+          {
+            "Id": "kcdjf-649c-40f9-ba3a-8657f4b3439f",
+            "Name": "FireSpell",
+            "Damage": 25
+          }
+        ]
+
+4.  Method: POST
+    URL: http://localhost:10001/transactions/packages
+    heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+
+5.  Method: GET
+    URL: http://localhost:10001/cards
+    heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+
+6.  Method: PUT
+    URL: http://localhost:10001/deck
+    heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+    format: JSON
+    request-body:
+        [
+        "dfv-37d0-426e-994e-43fc3ac83c08",
+          "dfv -7c86-4d06-9a80-641c2019a79f",
+          "dfv-bdb2-47e5-b6e4-68c5ab389334",
+          "dfv -e25e-4a95-aa2c-782823f36e2a"
+        ]
+
+7.  Method: GET
+    URL: http://localhost:10001/deck
+    heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+
+8.  Method: GET
+    URL: http://localhost:10001/users/kienboec
+    heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+
+9.  Method: PUT
+    URL: http://localhost:10001/users/kienboec
+    heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+    format: JSON
+    request-body:
+        [
+            "dfv-37d0-426e-994e-43fc3ac83c08",
+            "dfv -7c86-4d06-9a80-641c2019a79f",
+            "dfv-bdb2-47e5-b6e4-68c5ab389334",
+            "dfv -e25e-4a95-aa2c-782823f36e2a"
+        ]
+
+10.  Method: POST
+     URL: http://localhost:10001/battles
+     heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+
+11.  Method: GET
+     URL: http://localhost:10001/stats
+     heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+
+12.  Method: GET
+     URL: http://localhost:10001/scoreboard
+     heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+
+13.  Method: GET
+     URL: http://localhost:10001/tradings
+     heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+
+14.  Method: POST
+     URL: http://localhost:10001/tradings
+     heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+     format: JSON
+     request-body:
+         {
+           "Id": "6cd85277-4590-49d4-b0cf-ba0a921faad0",
+           "CardToTrade": "vshd-bdb2-47e5-b6e4-68c5ab389334",
+           "Type": "monster",
+           "MinimumDamage": 15
+         }
+
+15.  Method: POST
+     URL: http://localhost:10001/tradings/6cd85277-4590-49d4-b0cf-ba0a921faad0
+     heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+
+16.  Method: DEL
+     URL: http://localhost:10001/tradings/6cd85277-4590-49d4-b0cf-ba0a921faad0
+     heather: (Name) Authorization, (Value) Bearer kiesboec-mtcgToken
+
+
+
+
+And hear are some shell.scripts to test all the methods:
+
+1.  curl --request POST \
+      --url http://localhost:10001/sessions \
+      --header 'content-type: application/json' \
+      --data '{
+      "Username": "ksjdbf",
+      "Password": "ksjdnvl"
+    }'
+
+2.  curl --request POST \
+      --url http://localhost:10001/users \
+      --header 'content-type: application/json' \
+      --data '{
+      "Username": "fdgd",
+      "Password": "sjkdbf"
+    }'
+
+3.    curl --request POST \
+      --url http://localhost:10001/packages \
+      --header 'Authorization: Bearer admin-mtcgToken' \
+      --header 'content-type: application/json' \
+      --data '[
+      {
+        "Id": "jdhvjahvef-37d0-426e-994e-43fc3ac83c08",
+        "Name": "WaterGoblin",
+        "Damage": 10
+      },
+      {
+        "Id": "jahsdvf -7c86-4d06-9a80-641c2019a79f",
+        "Name": "WaterSpell",
+        "Damage": 20
+      },
+      {
+        "Id": "vshd-bdb2-47e5-b6e4-68c5ab389334",
+        "Name": "Ork",
+        "Damage": 45
+      },
+      {
+        "Id": "sdnmf -e25e-4a95-aa2c-782823f36e2a",
+        "Name": "Dragon",
+        "Damage": 50
+      },
+      {
+        "Id": "kcdjf-649c-40f9-ba3a-8657f4b3439f",
+        "Name": "FireSpell",
+        "Damage": 25
+      }
+    ]'
+
+4.  curl --request POST \
+      --url http://localhost:10001/transactions/packages \
+      --header 'Authorization: kienboec-mtcgToken'
+
+5.  curl --request GET \
+      --url http://localhost:10001/cards \
+      --header 'Authorization: Bearer kienboec-mtcgToken'
+
+6.  curl --request PUT \
+      --url http://localhost:10001/deck \
+      --header 'Authorization: Bearer kienboec-mtcgToken' \
+      --header 'content-type: application/json' \
+      --data '[
+      "dfv-37d0-426e-994e-43fc3ac83c08",
+      "dfv -7c86-4d06-9a80-641c2019a79f",
+      "dfv-bdb2-47e5-b6e4-68c5ab389334",
+      "dfv -e25e-4a95-aa2c-782823f36e2a"
+    ]'
+
+7.  curl --request GET \
+      --url http://localhost:10001/deck \
+      --header 'Authorization: Bearer kienboec-mtcgToken'
+
+8.  curl --request GET \
+      --url http://localhost:10001/users/timothee \
+      --header 'Authorization: timothee-mtcgToken'
+
+9.  curl --request PUT \
+      --url http://localhost:10001/users/timothee \
+      --header 'Authorization: timothee-mtcgToken' \
+      --header 'content-type: application/json' \
+      --data '{
+      "Name": "timothee",
+      "Bio": "test",
+      "Image": "test"
+    }'
+
+10. curl --request POST \
+      --url http://localhost:10001/battles \
+      --header 'Authorization: kienboec-mtcgToken'
+
+11. curl --request GET \
+      --url http://localhost:10001/stats \
+      --header 'Authorization: ksjdbf-mtcgToken'
+
+12. curl --request GET \
+      --url http://localhost:10001/scoreboard \
+      --header 'Authorization: timothee-mtcgToken'
+
+13. curl --request GET \
+      --url http://localhost:10001/tradings \
+      --header 'Authorization: timothee-mtcgToken'
+
+14. curl --request POST \
+      --url http://localhost:10001/tradings \
+      --header 'Authorization: timothee-mtcgToken' \
+      --header 'content-type: application/json' \
+      --data '{
+      "Id": "1uasdazfasd-uz-jhgdk",
+      "CardToTrade": "vshd-bdb2-47e5-b6e4-68c5ab389334",
+      "Type": "monster",
+      "MinimumDamage": 15
+    }'
+
+15. curl --request POST \
+      --url http://localhost:10001/tradings/6cd85277-4590-49d4-b0cf-ba0a921faad0 \
+      --header 'Authorization: ksjdbf-mtcgToken' \
+      --header 'content-type: application/json' \
+      --data '"vshd-bdb2-47e5-b6e4-68c5ab389334"'
+
+16. curl --request DELETE \
+      --url http://localhost:10001/1uasdazfasd-uz-jhgdk \
+      --header 'Authorization: timothee-mtcgToken'
