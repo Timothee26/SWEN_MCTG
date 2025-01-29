@@ -26,8 +26,9 @@ public class CardsRepositoryImpl implements CardsRepository {
     public String getUsername(String token){
         System.out.println("token :" + token);
         System.out.println("in der abfrage");
-        String sql = "SELECT * from userdb.login";
+        String sql = "SELECT * from userdb.login where token = ?";
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+            stmt.setString(1, token);
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 System.out.println("in der while");
@@ -44,9 +45,9 @@ public class CardsRepositoryImpl implements CardsRepository {
         }catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
-
-        return null;
+        throw new DataAccessException("User not found");
     }
+
 
     public boolean cardExists(String cardId){
         String sql = "SELECT count(*) from userdb.package where ID = ?";

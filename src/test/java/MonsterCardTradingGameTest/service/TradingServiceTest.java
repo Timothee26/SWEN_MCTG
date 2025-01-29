@@ -195,4 +195,98 @@ public class TradingServiceTest {
         assertTrue(exception.getMessage().contains("Trade with ID " + tradId + " not found"));
 
     }
+
+    @Test
+    void acceptTradingOfferTest(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:tradesTest.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        tradingRepository = new TradingRepositoryImpl(unitOfWork);
+        tradingRepositoryTest = new TradingRepositoryTestImpl(unitOfWork);
+        String token = "test-mtcgToken";
+        String cardId = "ksjhdfk-1e70-4b79-b3bd-f6eb679dd3b5";
+        String offerId = "2";
+        Trade trade = tradingRepository.getTrade(offerId);
+
+        Card card1before = tradingRepositoryTest.getCardTest(cardId);
+        Card card2before = tradingRepositoryTest.getCardTest(trade.getCardToTrade());
+
+        assertEquals("test", card1before.getBought());
+        assertEquals("Dragon", card1before.getName());
+        assertEquals("neu", card2before.getBought());
+        assertEquals("FireGoblin", card2before.getName());
+
+
+        tradingRepository.acceptTradingOffer(token, cardId, offerId);
+
+        Card card1 = tradingRepositoryTest.getCardTest(cardId);
+        Card card2 = tradingRepositoryTest.getCardTest(trade.getCardToTrade());
+
+        assertEquals("neu", card1.getBought());
+        assertEquals("Dragon", card1.getName());
+        assertEquals("test", card2.getBought());
+        assertEquals("FireGoblin", card2.getName());
+
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            tradingRepository.getTrade(offerId);
+        });
+        assertTrue(exception.getMessage().contains("Trade with ID " + offerId + " not found"));
+    }
+
+    @Test
+    void deleteTradingOfferTest(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:tradesTest.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        tradingRepository = new TradingRepositoryImpl(unitOfWork);
+        tradingRepositoryTest = new TradingRepositoryTestImpl(unitOfWork);
+        String token = "test-mtcgToken";
+        String offerId = "1";
+        tradingRepository.deleteTradingOffer(token, offerId);
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            tradingRepository.getTrade(offerId);
+        });
+        assertTrue(exception.getMessage().contains("Trade with ID " + offerId + " not found"));
+    }
+
+    @Test
+    void deleteTradingOfferTestWrongOfferId(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:tradesTest.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        tradingRepository = new TradingRepositoryImpl(unitOfWork);
+        tradingRepositoryTest = new TradingRepositoryTestImpl(unitOfWork);
+        String token = "test-mtcgToken";
+        String offerId = "2";
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            tradingRepository.deleteTradingOffer(token, offerId);
+        });
+        assertTrue(exception.getMessage().contains("this is not your trade"));
+    }
+
+    @Test
+    void deleteTradingOfferTestOfferIdNotExist(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:tradesTest.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        tradingRepository = new TradingRepositoryImpl(unitOfWork);
+        tradingRepositoryTest = new TradingRepositoryTestImpl(unitOfWork);
+        String token = "test-mtcgToken";
+        String offerId = "3";
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            tradingRepository.deleteTradingOffer(token, offerId);
+        });
+        assertTrue(exception.getMessage().contains("Trade with ID " + offerId + " not found"));
+    }
+
+    @Test
+    void deleteTradingOfferTestNotLoggedIn(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:tradesTest.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        tradingRepository = new TradingRepositoryImpl(unitOfWork);
+        tradingRepositoryTest = new TradingRepositoryTestImpl(unitOfWork);
+        String token = "notloggedin-mtcgToken";
+        String offerId = "3";
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            tradingRepository.deleteTradingOffer(token, offerId);
+        });
+        assertTrue(exception.getMessage().contains("User not found"));
+    }
+
 }

@@ -1,5 +1,6 @@
 package MonsterCardTradingGameTest.persistence;
 
+import mctg.model.Card;
 import mctg.model.Trade;
 import mctg.persistence.DataAccessException;
 import mctg.persistence.UnitOfWork;
@@ -34,5 +35,28 @@ public class TradingRepositoryTestImpl implements TradingRepositoryTest {
             throw new DataAccessException("Could not insert into database", e);
         }
         unitOfWork.commitTransaction();
-        return trade;    }
+        return trade;
+    }
+
+    @Override
+    public Card getCardTest(String cardId) {
+        Card card = null;
+        String sql = "SELECT * from userdb.package where id = ?";
+        try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+            stmt.setString(1, cardId);
+            ResultSet resultSet = stmt.executeQuery();
+            if(resultSet.next()) {
+                card = Card.builder()
+                        .id(resultSet.getString("id"))
+                        .name(resultSet.getString("name"))
+                        .damage(resultSet.getFloat("damage"))
+                        .bought(resultSet.getString("bought"))
+                        .elementType(resultSet.getString("type"))
+                        .build();
+            }
+        }catch (SQLException e) {
+            throw new DataAccessException("Select nicht erfolgreich", e);
+        }
+        return card;
+    }
 }

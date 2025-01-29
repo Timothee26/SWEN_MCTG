@@ -92,14 +92,15 @@ public class DeckRepositoryImpl implements DeckRepository {
     public String getUsername(String token){
         System.out.println("token :" + token);
         System.out.println("in der abfrage");
-        String sql = "SELECT * from userdb.login";
+        String sql = "SELECT * from userdb.login where token = ?";
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+            stmt.setString(1, token);
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 System.out.println("in der while");
                 User user = User.builder()
-                        .username(resultSet.getString("username"))
-                        .token(resultSet.getString("token"))
+                        .username(resultSet.getString(1))
+                        .token(resultSet.getString(2))
                         .build();
                 System.out.println("user.token:" + user.getToken());
                 if(user.getToken().contains(token)){
@@ -110,9 +111,9 @@ public class DeckRepositoryImpl implements DeckRepository {
         }catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
-
-        return null;
+        throw new DataAccessException("User not found");
     }
+
 
     public List<Card> getDeck(String token){
         String username = getUsername(token);

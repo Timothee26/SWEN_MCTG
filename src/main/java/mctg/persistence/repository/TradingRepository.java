@@ -16,5 +16,6 @@ public interface TradingRepository {
     boolean checkDeckOwner(String username, String cardId);
     Trade getTrade(String offerId);
     boolean deleteTrade(String offerId);
+    String getUsername(String token);
 
 }

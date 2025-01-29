@@ -9,4 +9,5 @@ public interface CardsRepository {
     Card getCard(String cardId);
     boolean cardExists(String cardId);
     boolean updateUser(String cardId, String username);
+    String getUsername(String token);
 }

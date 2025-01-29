@@ -216,8 +216,10 @@ public class UserServiceTest {
         userRepository = new UserRepositoryImpl(unitOfWork);
         userRepositoryTest = new UserRepositoryTestImpl(unitOfWork);
         String token = "test-mtgToken";
-        userRepository.getUsername(token);
-        assertEquals(null, userRepository.getUsername(token));
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            userRepository.getUsername(token);
+        });
+        assertTrue(exception.getMessage().contains("User not found"));
     }
 
     @Test

@@ -5,12 +5,9 @@ import mctg.model.Card;
 import mctg.model.UserData;
 import mctg.persistence.DataAccessException;
 import mctg.persistence.UnitOfWork;
-import mctg.persistence.repository.DeckRepository;
-import mctg.persistence.repository.DeckRepositoryImpl;
+import mctg.persistence.repository.*;
 import MonsterCardTradingGameTest.persistence.*;
 
-import mctg.persistence.repository.PackageRepository;
-import mctg.persistence.repository.PackageRepositoryImpl;
 import org.junit.jupiter.api.*;
 import org.postgresql.core.ConnectionFactory;
 
@@ -208,5 +205,29 @@ public class DeckServiceTest {
         assertEquals(45, cards.get(3).getDamage());
         assertEquals("test",cards.get(3).getBought());
         assertEquals("Normal",cards.get(3).getElementType());
+    }
+
+    @Test
+    public void getUsernameTestNotLoggedIn(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:deckTest.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        deckRepository = new DeckRepositoryImpl(unitOfWork);
+        deckRepositoryTest = new DeckRepositoryTestImpl(unitOfWork);
+        String token = "notloggedin-mtcgToken";
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            deckRepository.getUsername(token);
+        });
+        assertTrue(exception.getMessage().contains("User not found"));
+    }
+
+    @Test
+    public void getUsernameTestLoggedIn(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:deckTest.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        deckRepository = new DeckRepositoryImpl(unitOfWork);
+        deckRepositoryTest = new DeckRepositoryTestImpl(unitOfWork);
+        String token = "test-mtcgToken";
+        String username = deckRepository.getUsername(token);
+        assertEquals("test", username);
     }
 }

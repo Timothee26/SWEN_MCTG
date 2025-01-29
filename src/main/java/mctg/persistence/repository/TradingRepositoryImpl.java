@@ -29,8 +29,9 @@ public class TradingRepositoryImpl implements TradingRepository {
     public String getUsername(String token){
         System.out.println("token :" + token);
         System.out.println("in der abfrage");
-        String sql = "SELECT * from userdb.login";
+        String sql = "SELECT * from userdb.login where token = ?";
         try(PreparedStatement stmt = this.unitOfWork.prepareStatement(sql)){
+            stmt.setString(1, token);
             ResultSet resultSet = stmt.executeQuery();
             while (resultSet.next()) {
                 System.out.println("in der while");
@@ -47,8 +48,7 @@ public class TradingRepositoryImpl implements TradingRepository {
         }catch (SQLException e) {
             throw new DataAccessException("Select nicht erfolgreich", e);
         }
-
-        return null;
+        throw new DataAccessException("User not found");
     }
 
     @Override

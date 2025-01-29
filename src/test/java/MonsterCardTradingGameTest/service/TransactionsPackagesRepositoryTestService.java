@@ -3,6 +3,7 @@ package MonsterCardTradingGameTest.service;
 import mctg.model.Card;
 import mctg.persistence.DataAccessException;
 import mctg.persistence.UnitOfWork;
+import mctg.persistence.repository.DeckRepositoryImpl;
 import mctg.persistence.repository.TransactionsPackagesRepository;
 import mctg.persistence.repository.TransactionsPackagesRepositoryImpl;
 import MonsterCardTradingGameTest.persistence.*;
@@ -64,7 +65,7 @@ public class TransactionsPackagesRepositoryTestService {
         UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
         transactionsPackagesRepository = new TransactionsPackagesRepositoryImpl(unitOfWork);
         transactionsPackagesRepositoryTest = new TransactionsPackagesRepositoryTestImpl(unitOfWork);
-        String token = "test-mtcg";
+        String token = "test-mtcgToken";
         String username = "test";
         transactionsPackagesRepository.buyPackage(token);
         List<Card> cards = transactionsPackagesRepositoryTest.getBuyPackageTest(username);
@@ -100,7 +101,29 @@ public class TransactionsPackagesRepositoryTestService {
         assertEquals(45, cards.get(4).getDamage());
         assertEquals("test",cards.get(4).getBought());
         assertEquals("Normal",cards.get(4).getElementType());
-
     }
 
+    @Test
+    public void getUsernameTestNotLoggedIn(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:transactionsPackages.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        transactionsPackagesRepository = new TransactionsPackagesRepositoryImpl(unitOfWork);
+        transactionsPackagesRepositoryTest = new TransactionsPackagesRepositoryTestImpl(unitOfWork);
+        String token = "notloggedin-mtcgToken";
+        DataAccessException exception = assertThrows(DataAccessException.class, () -> {
+            transactionsPackagesRepository.getUsername(token);
+        });
+        assertTrue(exception.getMessage().contains("User not found"));
+    }
+
+    @Test
+    public void getUsernameTestLoggedIn(){
+        String jdbcUrl = "jdbc:h2:~/mctg;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;INIT=RUNSCRIPT FROM 'classpath:transactionsPackages.sql'";
+        UnitOfWork unitOfWork = new UnitOfWork(jdbcUrl);
+        transactionsPackagesRepository = new TransactionsPackagesRepositoryImpl(unitOfWork);
+        transactionsPackagesRepositoryTest = new TransactionsPackagesRepositoryTestImpl(unitOfWork);
+        String token = "test-mtcgToken";
+        String username = transactionsPackagesRepository.getUsername(token);
+        assertEquals("test", username);
+    }
 }
